@@ -10,11 +10,11 @@ import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
 import org.jetbrains.letsPlot.commons.geometry.DoubleVector
 import org.jetbrains.letsPlot.commons.unsupported.UNSUPPORTED
 import org.jetbrains.letsPlot.datamodel.mapping.framework.Mapper
-import org.jetbrains.letsPlot.datamodel.svg.style.StyleSheet
 import org.jetbrains.letsPlot.datamodel.svg.dom.SvgLocatable
 import org.jetbrains.letsPlot.datamodel.svg.dom.SvgNode
 import org.jetbrains.letsPlot.datamodel.svg.dom.SvgPlatformPeer
 import org.jetbrains.letsPlot.datamodel.svg.dom.SvgTextContent
+import org.jetbrains.letsPlot.datamodel.svg.style.StyleSheet
 
 class SvgJfxPeer : SvgPlatformPeer {
     private val myMappingMap = HashMap<SvgNode, Mapper<out SvgNode, out Node>>()
@@ -96,7 +96,8 @@ class SvgJfxPeer : SvgPlatformPeer {
             throw IllegalStateException("Undefined target node bounds: ${target::class.simpleName}")
         }
 
-        return DoubleRectangle(bounds.minX, bounds.minY, bounds.width, bounds.height)
+        val bbox = DoubleRectangle(bounds.minX, bounds.minY, bounds.width, bounds.height)
+        return bbox
     }
 
     fun applyStyleSheet(styleSheet: StyleSheet) {

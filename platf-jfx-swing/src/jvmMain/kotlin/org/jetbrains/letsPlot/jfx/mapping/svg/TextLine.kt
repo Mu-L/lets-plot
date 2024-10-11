@@ -5,9 +5,13 @@
 
 package org.jetbrains.letsPlot.jfx.mapping.svg
 
+import javafx.application.Platform
 import javafx.collections.ListChangeListener
 import javafx.geometry.Bounds
+import javafx.geometry.Insets
 import javafx.geometry.VPos
+import javafx.scene.Node
+import javafx.scene.control.Hyperlink
 import javafx.scene.layout.Region
 import javafx.scene.paint.Color
 import javafx.scene.text.*
@@ -29,6 +33,7 @@ internal class TextLine : Region() {
         val fontScale: Double? = null,
         // NOTE: resets between runs, yet by standard it alters the baseline for the rest of the text
         val dy: Double? = null,
+        val href: String? = null
     )
 
     init {
@@ -38,6 +43,20 @@ internal class TextLine : Region() {
             }
         )
     }
+
+    override fun computeMaxHeight(width: Double): Double {
+        return super.computeMaxHeight(width).also { println("computeMaxHeight: $it") }
+    }
+
+    override fun computeMinHeight(width: Double): Double {
+        return super.computeMinHeight(width).also { println("computeMinHeight: $it") }
+    }
+
+    override fun computePrefHeight(width: Double): Double {
+
+        return 29.0//super.computePrefHeight(width).also { println("computePrefHeight: $it") }
+    }
+
 
     var content: List<TextRun> = emptyList()
         set(value) {
@@ -139,12 +158,57 @@ internal class TextLine : Region() {
         rebuild()
     }
 
-    private fun rebuild() {
+    private fun bbox(textRunElement: Node): Bounds {
+        return when (textRunElement) {
+            is Text -> textRunElement.boundsInLocal
+            is Hyperlink -> textRunElement.graphic.boundsInLocal
+            else -> error("Unsupported text run element: $textRunElement")
+        }
+    }
+
+    private fun relayout() {
         val fontMetric = fontMetric ?: return // wait for font to be set
 
-        val texts = content.map(::textRunToTextFx)
+        content.zip(children).forEach { (textRun, text) ->
+            adjustPosition(textRun, text)
+        }
 
-        val width = texts.sumOf { it.boundsInLocal.width }
+        val width = children.sumOf { bbox(it).width }
+        val dx = when (textAlignment) {
+            TextAlignment.RIGHT -> -width
+            TextAlignment.CENTER -> -width / 2
+            else -> 0.0
+        }
+
+        // Font metrics from Text bounds:
+        // lineHeight = fontMetric.height
+        // ascent = -fontMetric.minY
+        // descent = fontMetric.maxY
+        val height = fontMetric.minY
+        val dy = when (textOrigin) {
+            null -> 0.0
+            VPos.BOTTOM -> 0.0
+            VPos.TOP -> -height
+            VPos.CENTER -> -height / 2
+            VPos.BASELINE -> error("VPos.BASELINE is not supported")
+        }
+
+        // Arrange runs one after another
+        var currentRunPosX = x
+        children.forEach { text ->
+            text.layoutX = currentRunPosX + dx
+            text.layoutY += y + dy + getBaseline(text)
+            currentRunPosX += bbox(text).width
+        }
+    }
+
+    private fun rebuild() {
+        children.clear()
+        val fontMetric = fontMetric ?: return // wait for font to be set
+
+        val texts: List<Node> = content.map(::textRunToFxNode)
+
+        val width = texts.sumOf { bbox(it).width }
         val dx = when (textAlignment) {
             TextAlignment.RIGHT -> -width
             TextAlignment.CENTER -> -width / 2
@@ -167,16 +231,43 @@ internal class TextLine : Region() {
         // Arrange runs one after another
         var currentRunPosX = x
         texts.forEach { text ->
-            text.x = currentRunPosX + dx
-            text.y += y + dy
-            currentRunPosX += text.boundsInLocal.width
+            text.layoutX = currentRunPosX + dx
+            text.layoutY += y + dy
+            currentRunPosX += bbox(text).width
         }
 
-        children.clear()
-        children.addAll(texts)
+        //layout()
+        relayout()
+        Platform.runLater {
+            relayout()
+            children
+                .firstOrNull { it is Hyperlink }
+                ?.let{ println("Hyperlink bounds: ${it.boundsInLocal}") }
+
+            println("TextLine bounds: $boundsInLocal")
+        }
     }
 
-    private fun textRunToTextFx(textRun: TextRun): Text {
+    private fun adjustPosition(textRun: TextRun, text: Node) {
+        val bounds = text.boundsInLocal
+        val lineHeight = bounds.height
+
+        val dy = textRun.dy?.let { lineHeight * it } ?: 0.0
+        val baseline = when (textRun.baselineShift) {
+            BaselineShift.SUPER -> lineHeight * 0.4
+            BaselineShift.SUB -> lineHeight * -0.4
+            else -> 0.0
+        }
+        val y = -baseline + dy
+
+        when (text) {
+            is Hyperlink -> text.layoutY = y
+            is Text -> text.layoutY = y
+            else -> error("Unsupported text run element: $text")
+        }
+    }
+
+    private fun textRunToFxNode(textRun: TextRun): Node {
         val font = font ?: error("Font is not specified")
         val scaleFactor = textRun.fontScale ?: 1.0
 
@@ -204,12 +295,52 @@ internal class TextLine : Region() {
             BaselineShift.SUB -> lineHeight * -0.4
             else -> 0.0
         }
-        text.y = -baseline + dy
 
-        return text
+        val node = if (textRun.href != null) {
+            val hyperlink = Hyperlink("", text)
+            children.add(hyperlink)
+
+            hyperlink.layout()
+            hyperlink.style = "-fx-padding: 0; -fx-margin: 0; -fx-background-insets: 0; -fx-border-insets: 0;"
+            hyperlink.maxHeight = 10.0//text.boundsInLocal.height
+            hyperlink.prefHeight = 10.0//text.boundsInLocal.height
+
+            hyperlink.setOnAction {
+                println("Clicked on ${textRun.href}")
+            }
+            val y = -baseline + dy
+            text.layoutY = y
+            hyperlink
+        } else {
+            children.add(text)
+            val y = -baseline + dy
+            text.layoutY = y
+            text
+        }
+        return node
+    }
+
+    private fun getBaseline(text: Node): Double {
+        return when (text) {
+            is Text -> 0.0
+            is Hyperlink -> text.graphic.boundsInLocal.minY
+            else -> error("Unsupported text run element: $text")
+        }
     }
 
     override fun toString(): String {
         return "TextLine(content=$content, fill=$fill, stroke=$stroke, font=$font, textOrigin=$textOrigin, textAlignment=$textAlignment)"
     }
+}
+
+class LetsPlotHyperlink : Hyperlink() {
+    init {
+        border = null
+        padding = Insets(0.0)
+        setOnAction {
+            println("Clicked on $text")
+        }
+    }
+
+
 }
