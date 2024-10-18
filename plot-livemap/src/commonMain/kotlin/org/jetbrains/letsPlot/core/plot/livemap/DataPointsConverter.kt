@@ -150,7 +150,9 @@ internal class DataPointsConverter(
             }
 
             val pathData = createPathGroups(aesthetics.dataPoints(), TO_LOCATION_X_Y, sorted = true)
-            val variadicPathData = pathData.mapValues { (_, pathData) -> LinesHelper.splitByStyle(pathData) }
+            val variadicPathData = pathData.mapValues { (_, pathData) ->
+                pathData.flatMap { LinesHelper.splitByStyle(it) }
+            }
             val interpolatedPathData = LinesHelper.interpolatePathData(variadicPathData)
 
             return process(paths = interpolatedPathData.values.flatten(), isClosed = false)
@@ -158,7 +160,7 @@ internal class DataPointsConverter(
 
         fun polygon(): List<DataPointLiveMapAesthetics> {
             val paths = createPathGroups(aesthetics.dataPoints(), TO_LOCATION_X_Y, sorted = true)
-            return process(paths = paths.values, isClosed = true)
+            return process(paths = paths.values.flatten(), isClosed = true)
         }
 
         fun rect(): List<DataPointLiveMapAesthetics> {

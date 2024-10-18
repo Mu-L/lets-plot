@@ -50,8 +50,10 @@ open class LinesHelper(
         toLocation: (DataPointAesthetics) -> DoubleVector?
     ): List<LinePath> {
         // draw line for each group
-        val pathDataByGroup = createPathDataByGroup(dataPoints, toLocation)
-        return renderPaths(pathDataByGroup.values, filled = false)
+        val pathDataByGroup: Map<Int, List<PathData>> = createPathDataByGroup(dataPoints, toLocation)
+        return pathDataByGroup.values.flatMap {
+            renderPaths(it, filled = false)
+        }
     }
 
     // TODO: filled parameter is always false
@@ -82,20 +84,33 @@ open class LinesHelper(
         locationTransform: (DataPointAesthetics) -> DoubleVector? = GeomUtil.TO_LOCATION_X_Y,
         closePath: Boolean = false,
     ): Map<Int, List<PathData>> {
-        val domainData = preparePathData(dataPoints, locationTransform, closePath)
-        return toClient(domainData)
+        val domainData: Map<Int, List<PathData>> = preparePathData(dataPoints, locationTransform, closePath).let { data ->
+            val resultData = mutableMapOf<Int, MutableList<PathData>>()
+            data.forEach { (k, pathList) ->
+                pathList.forEach { path ->
+                    val clientData = toClient(mapOf(k to listOf(path)))
+                    resultData.getOrPut(k, ::ArrayList).addAll(clientData.values.flatten())
+                }
+            }
+            resultData
+        }
+        return domainData
     }
 
     fun createPolygon(
         dataPoints: Iterable<DataPointAesthetics>,
         locationTransform: (DataPointAesthetics) -> DoubleVector? = GeomUtil.TO_LOCATION_X_Y,
     ): List<Pair<SvgNode, PolygonData>> {
-        val domainPathData = createPathGroups(dataPoints, locationTransform, sorted = true, closePath = false).values
+        val domainPathData: Collection<List<PathData>> =
+            createPathGroups(dataPoints, locationTransform, sorted = true, closePath = false).values
 
         // split in domain space! after resampling coordinates may repeat and splitRings will return wrong results
         val domainPolygonData = domainPathData
-            .map { splitRings(it.points, PathPoint.LOC_EQ) }
-            .mapNotNull { PolygonData.create(it) }
+            .flatMap { pathDataList ->
+                pathDataList
+                    .map { splitRings(it.points, PathPoint.LOC_EQ) }
+                    .mapNotNull { PolygonData.create(it) }
+            }
 
         val clientPolygonData = domainPolygonData.mapNotNull { polygon ->
             polygon.rings
@@ -133,7 +148,7 @@ open class LinesHelper(
     fun createPathDataByGroup(
         dataPoints: Iterable<DataPointAesthetics>,
         toLocation: (DataPointAesthetics) -> DoubleVector?
-    ): Map<Int, PathData> {
+    ): Map<Int, List<PathData>> {
         return createPathGroups(dataPoints, toClientLocation(toLocation), sorted = true, closePath = false)
     }
 
@@ -257,7 +272,7 @@ open class LinesHelper(
         closePath: Boolean
     ): Map<Int, List<PathData>> {
         val domainPathData = createPathGroups(dataPoints, locationTransform, sorted = true, closePath = closePath)
-        return domainPathData.mapValues { (_, pathData) -> listOf(pathData) }
+        return domainPathData.mapValues { (_, pathData) -> pathData }
     }
 
     private fun toClient(domainPathData: Map<Int, List<PathData>>): Map<Int, List<PathData>> {

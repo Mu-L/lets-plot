@@ -11,6 +11,7 @@ import org.jetbrains.letsPlot.core.commons.data.SeriesUtil
 import org.jetbrains.letsPlot.core.plot.base.*
 import org.jetbrains.letsPlot.core.plot.base.geom.util.GeomUtil
 import org.jetbrains.letsPlot.core.plot.base.geom.util.LinesHelper
+import org.jetbrains.letsPlot.core.plot.base.geom.util.PathData
 import org.jetbrains.letsPlot.core.plot.base.geom.util.TargetCollectorHelper
 import org.jetbrains.letsPlot.core.plot.base.render.SvgRoot
 
@@ -32,18 +33,23 @@ class StepGeom : LineGeom() {
         val dataPoints = GeomUtil.ordered_X(aesthetics.dataPoints())
         val linesHelper = LinesHelper(pos, coord, ctx)
 
-        val pathDataList = linesHelper.createPathDataByGroup(dataPoints, toLocationFor(overallAesBounds(ctx)))
+        val pathDataMap: Map<Int, List<PathData>> = linesHelper.createPathDataByGroup(dataPoints, toLocationFor(overallAesBounds(ctx)))
         val horizontalThenVertical = when {
             !ctx.flipped && myDirection == Direction.HV -> true
             ctx.flipped && myDirection == Direction.VH -> true
             else -> false
         }
-        val linePaths = linesHelper.createSteps(pathDataList, horizontalThenVertical)
+        pathDataMap.forEach { (key, pathDataList) ->
+            pathDataList.forEach { pathData ->
+                val curPath = mapOf(key to pathData)
+                val linePaths = linesHelper.createSteps(curPath, horizontalThenVertical)
 
-        root.appendNodes(linePaths)
+                root.appendNodes(linePaths)
 
-        val targetCollectorHelper = TargetCollectorHelper(GeomKind.STEP, ctx)
-        targetCollectorHelper.addPaths(pathDataList)
+                val targetCollectorHelper = TargetCollectorHelper(GeomKind.STEP, ctx)
+                targetCollectorHelper.addPaths(curPath)
+            }
+        }
     }
 
     private fun toLocationFor(viewPort: DoubleRectangle): (DataPointAesthetics) -> DoubleVector? {

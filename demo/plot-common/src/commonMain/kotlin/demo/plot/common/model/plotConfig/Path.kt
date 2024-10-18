@@ -11,7 +11,8 @@ open class Path {
     fun plotSpecList(): List<MutableMap<String, Any>> {
         return listOf(
             colored(),
-            polar()
+            polar(),
+            withNulls(),
         )
     }
 
@@ -166,6 +167,27 @@ open class Path {
                 |  ]
                 |}
                 """.trimMargin()
+            return parsePlotSpec(spec)
+        }
+
+        private fun withNulls(): MutableMap<String, Any> {
+            val spec = """
+                    |{
+                    |   "data": {
+                    |        "x": [ 1.0, 1.0, 1.0, 4.0, 5.0, 6.0, null, 8.0, 9.0 ],
+                    |        "y": [ 1.0, 5.0, null, 10.0, 0.0, 9.0, 9.0, 9.0, 9.0 ]
+                    |      },
+                    |   "kind": "plot",
+                    |    "layers": [
+                    |        {
+                    |          "geom": "path",
+                    |          "mapping": { "x": "x", "y": "y"},
+                    |          "tooltips": { "lines": [ "^x, ^y" ] }
+                    |        }
+                    |    ]
+                    |}              
+                """.trimMargin()
+
             return parsePlotSpec(spec)
         }
     }

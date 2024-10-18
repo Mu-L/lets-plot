@@ -7,7 +7,6 @@ package org.jetbrains.letsPlot.core.plot.base.geom.util
 
 import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
 import org.jetbrains.letsPlot.commons.geometry.DoubleVector
-import org.jetbrains.letsPlot.commons.intern.filterNotNullValues
 import org.jetbrains.letsPlot.commons.intern.gcommon.collect.Ordering
 import org.jetbrains.letsPlot.core.commons.data.SeriesUtil
 import org.jetbrains.letsPlot.core.plot.base.Aes
@@ -160,7 +159,7 @@ object GeomUtil {
         pointTransform: ((DataPointAesthetics) -> DoubleVector?),
         sorted: Boolean,
         closePath: Boolean = false
-    ): Map<Int, PathData> {
+    ): Map<Int, List<PathData>> {
         val groups = createGroups(dataPoints, sorted).let { groups ->
             if (closePath) {
                 groups.mapValues { (_, group) -> group + group.first() }
@@ -168,14 +167,37 @@ object GeomUtil {
                 groups
             }
         }
+        fun <T> splitByNulls(list: List<T?>): List<List<T>> {
+            val result = mutableListOf<List<T>>()
+            var curSubList = mutableListOf<T>()
+
+            list.forEach { item ->
+                when (item) {
+                    null -> {
+                        if (curSubList.isNotEmpty()) {
+                            result.add(curSubList)
+                            curSubList = mutableListOf()
+                        }
+                    }
+                    else -> curSubList.add(item)
+                }
+            }
+            if (curSubList.isNotEmpty()) {
+                result.add(curSubList)
+            }
+            return result
+        }
 
         return groups.mapValues { (_, aesthetics) ->
-            val points = aesthetics.mapNotNull { aes -> pointTransform(aes)?.let { p -> PathPoint(aes, p) } }
-            when (points.isEmpty()) {
-                true -> null
-                false -> PathData.create(points)
+            val allPoints = aesthetics.map { aes -> pointTransform(aes)?.let { p -> PathPoint(aes, p) } }
+            val pointsList: List<List<PathPoint>> = splitByNulls(allPoints)
+            pointsList.mapNotNull { points ->
+                when (points.isEmpty()) {
+                    true -> null
+                    false -> PathData.create(points)
+                }
             }
-        }.filterNotNullValues()
+        }
     }
 
     fun rectToGeometry(minX: Double, minY: Double, maxX: Double, maxY: Double): List<DoubleVector> {
@@ -188,7 +210,7 @@ object GeomUtil {
         )
     }
 
-    internal fun extend(
+    private fun extend(
         clientRect: DoubleRectangle,
         flipped: Boolean,
         widthExpand: Double = 0.0,

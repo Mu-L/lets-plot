@@ -8,6 +8,7 @@ package org.jetbrains.letsPlot.core.plot.base.geom
 import org.jetbrains.letsPlot.core.plot.base.*
 import org.jetbrains.letsPlot.core.plot.base.geom.util.GeomUtil
 import org.jetbrains.letsPlot.core.plot.base.geom.util.LinesHelper
+import org.jetbrains.letsPlot.core.plot.base.geom.util.PathData
 import org.jetbrains.letsPlot.core.plot.base.geom.util.TargetCollectorHelper
 import org.jetbrains.letsPlot.core.plot.base.render.LegendKeyElementFactory
 import org.jetbrains.letsPlot.core.plot.base.render.SvgRoot
@@ -22,7 +23,7 @@ open class PathGeom : GeomBase() {
         get() = HLineGeom.LEGEND_KEY_ELEMENT_FACTORY
 
     protected open fun dataPoints(aesthetics: Aesthetics): Iterable<DataPointAesthetics> {
-        return GeomUtil.with_X_Y(aesthetics.dataPoints())
+        return aesthetics.dataPoints()
     }
 
     override fun buildIntern(
@@ -38,13 +39,18 @@ open class PathGeom : GeomBase() {
         linesHelper.setResamplingEnabled(!coord.isLinear && !flat)
 
         val closePath = linesHelper.meetsRadarPlotReq()
-        val pathData = linesHelper.createPathData(dataPoints, GeomUtil.TO_LOCATION_X_Y, closePath)
+        val pathDataMap: Map<Int, List<PathData>> = linesHelper.createPathData(dataPoints, GeomUtil.TO_LOCATION_X_Y, closePath)
 
-        val targetCollectorHelper = TargetCollectorHelper(GeomKind.PATH, ctx)
-        targetCollectorHelper.addVariadicPaths(pathData)
+        pathDataMap.forEach { (key, pathDataList) ->
+            pathDataList.forEach { pathData ->
+                val targetCollectorHelper = TargetCollectorHelper(GeomKind.PATH, ctx)
+                val curPath = mapOf(key to listOf(pathData))
+                targetCollectorHelper.addVariadicPaths(curPath)
 
-        val svgPath = linesHelper.renderPaths(pathData, filled = false)
-        root.appendNodes(svgPath)
+                val svgPath = linesHelper.renderPaths(curPath, filled = false)
+                root.appendNodes(svgPath)
+            }
+        }
     }
 
 
