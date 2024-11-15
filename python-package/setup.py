@@ -6,10 +6,12 @@ import platform
 from setuptools import Extension
 from setuptools import setup, find_packages
 
-kotlin_bridge_src = os.path.join('kotlin-bridge', 'lets_plot_kotlin_bridge.c')
+this_dir = os.path.dirname(os.path.abspath(__file__))
+root_dir = os.path.dirname(this_dir)
+kotlin_bridge_src = os.path.join(this_dir, 'kotlin-bridge', 'lets_plot_kotlin_bridge.c')
 
 this_system = platform.system()
-binaries_build_path = os.path.join('..', 'python-extension', 'build', 'bin', 'native', 'releaseStatic')
+binaries_build_path = os.path.join(root_dir, 'python-extension', 'build', 'bin', 'native', 'releaseStatic')
 
 python_package = 'lets_plot'
 
@@ -23,9 +25,9 @@ def update_js():
     from shutil import copy
 
     for lib in js_libs:
-        js_path = os.path.join('..', *js_relative_path, lib + '.js')
+        js_path = os.path.join(root_dir, *js_relative_path, lib + '.js')
 
-        dst_dir = os.path.join(python_package, 'package_data')
+        dst_dir = os.path.join(this_dir, python_package, 'package_data')
         if not os.path.isdir(dst_dir):
             os.mkdir(dst_dir)
 
@@ -33,10 +35,10 @@ def update_js():
 
 
 version_locals = {}
-with open(os.path.join(python_package, '_version.py')) as f:
+with open(os.path.join(this_dir, python_package, '_version.py')) as f:
     exec(f.read(), {}, version_locals)
 
-with open(os.path.join('..', 'README.md'), encoding='utf-8') as f:
+with open(os.path.join(root_dir, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 if this_system == 'Darwin':
