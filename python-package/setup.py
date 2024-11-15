@@ -40,9 +40,9 @@ with open(os.path.join('..', 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 if this_system == 'Darwin':
-    stdcpp_lib = 'c++'
+    stdcpp_lib = ''
     # fix for "ImportError: dlopen(...) Symbol not found: _NSGenericException" on macOS
-    extra_link = ['-framework', 'Foundation', '-lz']
+    extra_link = []
 
 elif this_system == 'Windows':
     stdcpp_lib = 'stdc++'
@@ -109,7 +109,7 @@ setup(name='lets-plot',
       ext_modules=[
           Extension('lets_plot_kotlin_bridge',
                     include_dirs=[binaries_build_path],
-                    libraries=['lets_plot_python_extension', stdcpp_lib],
+                    libraries=['lets_plot_python_extension'],
                     library_dirs=[binaries_build_path],
                     depends=['liblets_plot_python_extension_api.h'],
                     sources=[kotlin_bridge_src],
