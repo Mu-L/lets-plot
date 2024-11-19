@@ -131,7 +131,7 @@ class ScaleBreaks private constructor(
 
     companion object {
         fun genericFormatter(v: Any): String = when (v) {
-            is Number -> NumberFormat(Spec(type = "g", trim = true)).apply(v)
+            is Number -> NumberFormat(Spec(type = "g", comma = true, trim = true)).apply(v)
             else -> v.toString()
         }
 

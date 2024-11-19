@@ -55,8 +55,7 @@ internal class NumericBreakFormatter(
         } else {
             "g"
         }
-        // use comma only for large enough numbers
-        val comma = 4 <= domain10Power
+        val comma = type == "g"
 
         formatter = NumberFormat(NumberFormat.Spec(
             comma = comma,
