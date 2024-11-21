@@ -130,11 +130,6 @@ class ScaleBreaks private constructor(
 
 
     companion object {
-        fun genericFormatter(v: Any): String = when (v) {
-            is Number -> NumberFormat(Spec(type = "g", comma = true, trim = true)).apply(v)
-            else -> v.toString()
-        }
-
         private val DUMMY_FORMATTER: (Any) -> String =
             { v -> throw IllegalStateException("An attempt to format $v using 'dummy formatter'.") }
 
@@ -282,10 +277,8 @@ class ScaleBreaks private constructor(
     object DemoAndTest {
         fun continuous(
             domainValues: List<Double>,
-            formatter: ((Any) -> String)? = null
+            formatter: (Any) -> String
         ): ScaleBreaks {
-            @Suppress("NAME_SHADOWING")
-            val formatter = formatter ?: ::genericFormatter
             return ScaleBreaks(
                 domainValues = domainValues,
                 transformedValues = domainValues,

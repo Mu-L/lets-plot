@@ -47,6 +47,7 @@ class LegendAssembler(
         fillByAes: Aes<Color>,
         isMarginal: Boolean,
         ctx: PlotContext,
+        defaultFormatters: Map<Any, (Any) -> String>
     ) {
         legendLayers.add(
             LegendLayer.createDefaultLegendLayer(
@@ -59,7 +60,8 @@ class LegendAssembler(
                 colorByAes,
                 fillByAes,
                 isMarginal,
-                ctx
+                ctx,
+                defaultFormatters
             )
         )
     }
@@ -148,13 +150,14 @@ class LegendAssembler(
                 colorByAes: Aes<Color>,
                 fillByAes: Aes<Color>,
                 isMarginal: Boolean,
-                ctx: PlotContext
+                ctx: PlotContext,
+                defaultFormatters: Map<Any, (Any) -> String>
             ): LegendLayer {
 
                 val labelsValuesByAes: MutableMap<Aes<*>, Pair<List<String>, List<Any?>>> = mutableMapOf()
 
                 for (aes in aesList) {
-                    var scale = ctx.getScale(aes)
+                    var scale = ctx.getScale(aes).with().labelDefaultFormatter(defaultFormatters.getValue(aes)).build()
                     if (!scale.hasBreaks()) {
                         scale = ScaleBreaksUtil.withBreaks(scale, ctx.overallTransformedDomain(aes), 5)
                     }

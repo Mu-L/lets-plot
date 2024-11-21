@@ -7,6 +7,7 @@ package org.jetbrains.letsPlot.core.spec.front.tiles
 
 import org.jetbrains.letsPlot.core.commons.data.DataType
 import org.jetbrains.letsPlot.core.plot.base.Aes
+import org.jetbrains.letsPlot.core.plot.base.DataFrame
 import org.jetbrains.letsPlot.core.plot.base.Scale
 import org.jetbrains.letsPlot.core.plot.base.data.DataFrameUtil
 import org.jetbrains.letsPlot.core.plot.base.stat.Stats
@@ -15,7 +16,6 @@ import org.jetbrains.letsPlot.core.plot.base.theme.Theme
 import org.jetbrains.letsPlot.core.plot.builder.MarginalLayerUtil
 import org.jetbrains.letsPlot.core.plot.builder.VarBinding
 import org.jetbrains.letsPlot.core.plot.builder.assemble.GeomLayerBuilder
-import org.jetbrains.letsPlot.core.plot.builder.assemble.PlotAssembler
 import org.jetbrains.letsPlot.core.plot.builder.coord.CoordProvider
 import org.jetbrains.letsPlot.core.plot.builder.tooltip.conf.GeomInteraction
 import org.jetbrains.letsPlot.core.spec.config.GeoConfig
@@ -119,10 +119,23 @@ internal object PlotGeomTilesUtil {
         val varFormatters = dataFormatters + statFormatters
 
         val aesFormatters = layerConfig.varBindings
-            .associate { it.aes to (varFormatters[it.variable.name] ?: DataType.STRING.formatter) }
+            .associate { it.aes to variableToFormatter(it.variable, varFormatters) }
 
         return varFormatters + aesFormatters
 
+    }
+
+    private fun variableToFormatter(
+        variable: DataFrame.Variable,
+        varFormatters: Map<String, (Any) -> String>
+    ): (Any) -> String {
+        if (variable.name in varFormatters) {
+            return varFormatters[variable.name]!!
+        }
+        // "as-discrete" variable name, see asDiscreteName()
+        return variable.name.split(".").lastOrNull()?.let { varName ->
+            varFormatters[varName] ?: DataType.STRING.formatter
+        } ?: DataType.STRING.formatter
     }
 
     fun createLayerBuilder(

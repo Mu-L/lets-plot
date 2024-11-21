@@ -5,6 +5,8 @@
 
 package org.jetbrains.letsPlot.core.plot.base.scale
 
+import org.jetbrains.letsPlot.commons.formatting.number.NumberFormat
+import org.jetbrains.letsPlot.commons.formatting.number.NumberFormat.Spec
 import org.jetbrains.letsPlot.commons.formatting.string.StringFormat.ExponentFormat
 import org.jetbrains.letsPlot.commons.formatting.string.StringFormat.ExponentFormat.Companion.DEF_EXPONENT_FORMAT
 import org.jetbrains.letsPlot.core.plot.base.Scale
@@ -17,6 +19,7 @@ internal abstract class AbstractScale<DomainT> : Scale {
     protected val providedLabels: List<String>?
     protected val providedScaleBreaks: ScaleBreaks?
     protected val providedFormatter: ((Any) -> String)?
+    protected val defaultFormatter: (Any) -> String
     protected val labelLengthLimit: Int
     protected val expFormat: ExponentFormat
 
@@ -35,6 +38,7 @@ internal abstract class AbstractScale<DomainT> : Scale {
         providedScaleBreaks = null
         labelLengthLimit = 0
         providedFormatter = null
+        defaultFormatter = ::genericFormatter
         expFormat = DEF_EXPONENT_FORMAT
     }
 
@@ -44,6 +48,7 @@ internal abstract class AbstractScale<DomainT> : Scale {
         providedLabels = b.providedLabels
         providedScaleBreaks = b.providedScaleBreaks
         providedFormatter = b.providedFormatter
+        defaultFormatter = b.defaultFormatter
 
         labelLengthLimit = b.myLabelLengthLimit
         expFormat = b.myExpFormat
@@ -78,6 +83,11 @@ internal abstract class AbstractScale<DomainT> : Scale {
 
 
     companion object {
+        fun genericFormatter(v: Any): String = when (v) {
+            is Number -> NumberFormat(Spec(type = "g", comma = true, trim = true)).apply(v)
+            else -> v.toString()
+        }
+
         fun alignLablesAndBreaks(breaks: List<Any>, labels: List<String>): List<String> {
             return when {
                 labels.isEmpty() -> List(breaks.size) { "" }
@@ -95,6 +105,7 @@ internal abstract class AbstractScale<DomainT> : Scale {
         internal var providedScaleBreaks: ScaleBreaks? = scale.providedScaleBreaks
         internal var myLabelLengthLimit: Int = scale.labelLengthLimit
         internal var providedFormatter: ((Any) -> String)? = scale.providedFormatter
+        internal var defaultFormatter: (Any) -> String = scale.defaultFormatter
         internal var myExpFormat: ExponentFormat = scale.expFormat
 
         internal var myMultiplicativeExpand: Double = scale.multiplicativeExpand
@@ -130,6 +141,11 @@ internal abstract class AbstractScale<DomainT> : Scale {
 
         override fun labelFormatter(v: (Any) -> String): Scale.Builder {
             providedFormatter = v
+            return this
+        }
+
+        override fun labelDefaultFormatter(v: (Any) -> String): Scale.Builder {
+            defaultFormatter = v
             return this
         }
 
