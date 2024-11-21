@@ -105,8 +105,7 @@ internal object PlotAssemblerUtil {
                     colorByAes = layerInfo.colorByAes,
                     fillByAes = layerInfo.fillByAes,
                     isMarginal = layerInfo.isMarginal,
-                    ctx = ctx,
-                    defaultFormatters = layerInfo.defaultFormatters
+                    ctx = ctx
                 )
             }
 

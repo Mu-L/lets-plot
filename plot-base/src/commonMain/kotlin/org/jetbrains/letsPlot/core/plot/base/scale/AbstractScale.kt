@@ -5,8 +5,6 @@
 
 package org.jetbrains.letsPlot.core.plot.base.scale
 
-import org.jetbrains.letsPlot.commons.formatting.number.NumberFormat
-import org.jetbrains.letsPlot.commons.formatting.number.NumberFormat.Spec
 import org.jetbrains.letsPlot.commons.formatting.string.StringFormat.ExponentFormat
 import org.jetbrains.letsPlot.commons.formatting.string.StringFormat.ExponentFormat.Companion.DEF_EXPONENT_FORMAT
 import org.jetbrains.letsPlot.core.plot.base.Scale
@@ -31,14 +29,14 @@ internal abstract class AbstractScale<DomainT> : Scale {
     final override var additiveExpand = 0.0
         protected set
 
-    protected constructor(name: String) {
+    protected constructor(name: String, defaultFormatter: (Any) -> String) {
         this.name = name
+        this.defaultFormatter = defaultFormatter
         providedBreaks = null
         providedLabels = null
         providedScaleBreaks = null
         labelLengthLimit = 0
         providedFormatter = null
-        defaultFormatter = ::genericFormatter
         expFormat = DEF_EXPONENT_FORMAT
     }
 
@@ -83,11 +81,6 @@ internal abstract class AbstractScale<DomainT> : Scale {
 
 
     companion object {
-        fun genericFormatter(v: Any): String = when (v) {
-            is Number -> NumberFormat(Spec(type = "g", comma = true, trim = true)).apply(v)
-            else -> v.toString()
-        }
-
         fun alignLablesAndBreaks(breaks: List<Any>, labels: List<String>): List<String> {
             return when {
                 labels.isEmpty() -> List(breaks.size) { "" }

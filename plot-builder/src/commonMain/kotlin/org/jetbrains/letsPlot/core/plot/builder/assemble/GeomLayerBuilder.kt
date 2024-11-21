@@ -257,7 +257,6 @@ class GeomLayerBuilder(
             colorByAes = colorByAes,
             fillByAes = fillByAes,
             annotationProvider = myAnnotationProvider,
-            defaultFormatters = myDefaultFormatters,
         )
     }
 
@@ -287,8 +286,7 @@ class GeomLayerBuilder(
         override val fontFamilyRegistry: FontFamilyRegistry,
         override val colorByAes: Aes<Color>,
         override val fillByAes: Aes<Color>,
-        private val annotationProvider: ((MappedDataAccess, DataFrame) -> Annotation?)?,
-        override val defaultFormatters: Map<Any, (Any) -> String>
+        private val annotationProvider: ((MappedDataAccess, DataFrame) -> Annotation?)?
     ) : GeomLayer {
 
         override val geom: Geom = geomProvider.createGeom(

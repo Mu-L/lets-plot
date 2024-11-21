@@ -24,8 +24,9 @@ internal class ContinuousScale : AbstractScale<Double> {
 
     constructor(
         name: String,
+        defaultFormatter: (Any) -> String,
         continuousOutput: Boolean
-    ) : super(name) {
+    ) : super(name, defaultFormatter) {
         isContinuous = continuousOutput
         continuousTransform = Transforms.IDENTITY
         customBreaksGenerator = null

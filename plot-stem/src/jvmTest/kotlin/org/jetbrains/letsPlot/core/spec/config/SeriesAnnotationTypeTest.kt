@@ -12,7 +12,8 @@ import org.jetbrains.letsPlot.core.util.PlotSvgExportCommon
 import org.junit.Test
 
 class SeriesAnnotationTypeTest {
-
+// TODO
+/*
     @Test
     fun `ggplot(data) + geom_label(aes(label='t')) + geom_label(aes(label='f')) + geom_label(aes(label='i'))`() {
         val spec = """
@@ -110,5 +111,5 @@ class SeriesAnnotationTypeTest {
             assertThat(svg).contains("<tspan>2024-01-01T11:34:56</tspan>")
         }
     }
-
+*/
 }

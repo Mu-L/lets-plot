@@ -43,8 +43,8 @@ open class AxisComponentDemo : SimpleDemoBase(DEMO_BOX_SIZE) {
         val domainX = DoubleSpan(0.0, 1000.0)
         val domainY = DoubleSpan(0.0, 1000.0)
 
-        var scaleX = Scales.continuousDomain("X", true)
-        var scaleY = Scales.continuousDomain("Y", true)
+        var scaleX = Scales.continuousDomain("X", { it.toString() },  true) // TODO
+        var scaleY = Scales.continuousDomain("Y", { it.toString() }, true) // TODO
 
         scaleX = ScaleBreaksUtil.withBreaks(scaleX, domainX, 10)
         scaleY = ScaleBreaksUtil.withBreaks(scaleY, domainY, 10)

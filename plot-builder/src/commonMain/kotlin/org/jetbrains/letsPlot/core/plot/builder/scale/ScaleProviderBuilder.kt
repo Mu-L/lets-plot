@@ -181,9 +181,15 @@ class ScaleProviderBuilder<T> constructor(private val aes: Aes<T>) {
         /**
          * Discrete domain.
          */
-        override fun createScale(defaultName: String, discreteTransform: DiscreteTransform, guideTitle: String?): Scale {
+        override fun createScale(
+            defaultName: String,
+            defaultFormatter: (Any) -> String,
+            discreteTransform: DiscreteTransform,
+            guideTitle: String?
+        ): Scale {
             val scale: Scale = Scales.discreteDomain(
                 scaleName(defaultName, guideTitle),
+                defaultFormatter,
                 discreteTransform,
             )
 
@@ -192,6 +198,7 @@ class ScaleProviderBuilder<T> constructor(private val aes: Aes<T>) {
 
         override fun createScale(
             defaultName: String,
+            defaultFormatter: (Any) -> String,
             continuousTransform: ContinuousTransform,
             continuousRange: Boolean,
             guideBreaks: WithGuideBreaks<Any>?,
@@ -203,6 +210,7 @@ class ScaleProviderBuilder<T> constructor(private val aes: Aes<T>) {
             // continuous (numeric) domain
             scale = Scales.continuousDomain(
                 name,
+                defaultFormatter,
                 continuousRange = continuousRange || myAes.isNumeric
             )
 

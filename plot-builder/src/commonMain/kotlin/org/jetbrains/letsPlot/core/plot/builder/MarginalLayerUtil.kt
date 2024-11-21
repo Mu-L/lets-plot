@@ -15,7 +15,7 @@ import org.jetbrains.letsPlot.core.plot.builder.assemble.PositionalScalesUtil
 import org.jetbrains.letsPlot.core.plot.builder.coord.CoordProvider
 
 object MarginalLayerUtil {
-    private val MARGINAL_SCALE = Scales.continuousDomain("marginal", true)
+    private val MARGINAL_SCALE = Scales.continuousDomain("marginal", { it.toString() }, true) // TODO
     private val MARGINAL_SCALE_REVERSED = MARGINAL_SCALE.with().continuousTransform(Transforms.REVERSE).build()
     private val MARGINAL_SCALES = mapOf(
         MarginSide.LEFT to MARGINAL_SCALE_REVERSED,

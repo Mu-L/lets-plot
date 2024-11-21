@@ -34,6 +34,7 @@ internal class ScaleProviderBuilderTest {
         // continuous scale
         val scale = scaleProvider.createScale(
             "X-scale",
+            { it.toString() }, // TODO
             Transforms.IDENTITY,
             continuousRange = false,
             guideBreaks = null,

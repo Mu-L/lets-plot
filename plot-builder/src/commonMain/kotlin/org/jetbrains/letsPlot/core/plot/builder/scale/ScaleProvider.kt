@@ -20,13 +20,14 @@ interface ScaleProvider {
     /**
      * Create scale for discrete input (domain)
      */
-    fun createScale(defaultName: String, discreteTransform: DiscreteTransform, guideTitle: String?): Scale
+    fun createScale(defaultName: String, defaultFormatter: (Any) -> String, discreteTransform: DiscreteTransform, guideTitle: String?): Scale
 
     /**
      * Create scale for continuous (numeric) input (domain)
      */
     fun createScale(
         defaultName: String,
+        defaultFormatter: (Any) -> String,
         continuousTransform: ContinuousTransform,
         continuousRange: Boolean,
         guideBreaks: WithGuideBreaks<Any>?,

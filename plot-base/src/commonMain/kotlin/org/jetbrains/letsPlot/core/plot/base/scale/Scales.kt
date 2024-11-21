@@ -13,16 +13,18 @@ object Scales {
 
     fun continuousDomain(
         name: String,
+        defaultFormatter: (Any) -> String,
         continuousRange: Boolean
     ): Scale {
-        return ContinuousScale(name, continuousRange)
+        return ContinuousScale(name, defaultFormatter, continuousRange)
     }
 
     fun discreteDomain(
         name: String,
+        defaultFormatter: (Any) -> String,
         discreteTransform: DiscreteTransform,
     ): Scale {
-        return DiscreteScale(name, discreteTransform)
+        return DiscreteScale(name, defaultFormatter, discreteTransform)
     }
 
     /**
@@ -36,6 +38,7 @@ object Scales {
         ): Scale {
             return DiscreteScale(
                 name,
+                { it.toString() }, // TODO
                 DiscreteTransform(domainValues, domainLimits),
             )
         }
@@ -45,12 +48,13 @@ object Scales {
             domainValues: List<Any>,
         ): Scale {
             val transform = DiscreteTransform(domainValues, emptyList())
-            return DiscreteScale(name, transform)
+            return DiscreteScale(name, { it.toString() }, transform) // TODO
         }
 
         fun continuousDomain(name: String, aes: Aes<*>): Scale {
             return ContinuousScale(
                 name,
+                { it.toString() }, // TODO
                 aes.isNumeric
             )
         }
@@ -58,6 +62,7 @@ object Scales {
         fun continuousDomainNumericRange(name: String): Scale {
             return ContinuousScale(
                 name,
+                { it.toString() }, // TODO
                 true
             )
         }

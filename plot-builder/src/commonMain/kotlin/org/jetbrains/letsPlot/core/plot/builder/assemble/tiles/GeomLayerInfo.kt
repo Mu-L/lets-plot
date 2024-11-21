@@ -19,7 +19,6 @@ class GeomLayerInfo(
     val colorByAes: Aes<Color> = geomLayer.colorByAes
     val fillByAes: Aes<Color> = geomLayer.fillByAes
     val isMarginal: Boolean = geomLayer.isMarginal
-    val defaultFormatters: Map<Any, (Any) -> String> = geomLayer.defaultFormatters
 
     fun renderedAes(): List<Aes<*>> = geomLayer.renderedAes()
     fun hasBinding(aes: Aes<*>): Boolean = geomLayer.hasBinding(aes)

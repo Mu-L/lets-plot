@@ -13,6 +13,7 @@ import org.jetbrains.letsPlot.core.plot.builder.scale.ScaleProvider
 import org.jetbrains.letsPlot.core.plot.builder.scale.WithGuideBreaks
 import org.jetbrains.letsPlot.core.spec.PlotConfigUtil
 import org.jetbrains.letsPlot.core.spec.config.LayerConfig
+import org.jetbrains.letsPlot.core.spec.front.tiles.PlotGeomTilesUtil
 
 /**
  * Front-end.
@@ -45,9 +46,13 @@ internal object PlotConfigScales {
             val guideTitle = guideOptionsMap[GuideKey.fromAes(aes)]?.getTitle()
             val defaultName = PlotConfigUtil.defaultScaleName(aes, variablesByMappedAes)
             val scaleProvider = scaleProviderByAes.getValue(aes)
+            val defaultFormatter: (Any) -> String = layerConfigs
+                .map { layerConfig -> PlotGeomTilesUtil.createDefaultFormatters(layerConfig) }
+                .firstOrNull { it.contains(aes) }
+                .let { f -> f?.getValue(aes) } ?: { it.toString() }
 
             val scale = when (val transform = transformByAes.getValue(aes)) {
-                is DiscreteTransform -> scaleProvider.createScale(defaultName, transform, guideTitle)
+                is DiscreteTransform -> scaleProvider.createScale(defaultName, defaultFormatter, transform, guideTitle)
                 else -> {
                     transform as ContinuousTransform
                     val mapper = mappersByAes.getValue(aes)
@@ -58,7 +63,7 @@ internal object PlotConfigScales {
                         if (mapper is WithGuideBreaks<*>) mapper as WithGuideBreaks<Any>
                         else null
 
-                    scaleProvider.createScale(defaultName, transform, continuousRange, guideBreaks, guideTitle)
+                    scaleProvider.createScale(defaultName, defaultFormatter, transform, continuousRange, guideBreaks, guideTitle)
                 }
             }
 

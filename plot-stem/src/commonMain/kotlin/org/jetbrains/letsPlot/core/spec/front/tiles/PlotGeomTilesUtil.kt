@@ -113,7 +113,7 @@ internal object PlotGeomTilesUtil {
         }
     }
 
-    private fun createDefaultFormatters(layerConfig: LayerConfig): Map<Any, (Any) -> String> {
+    fun createDefaultFormatters(layerConfig: LayerConfig): Map<Any, (Any) -> String> {
         val dataFormatters = layerConfig.dtypes.mapValues { (_, dtype) -> dtype.formatter }
         val statFormatters = Stats.VARS.mapValues { DataType.FLOATING.formatter }
         val varFormatters = dataFormatters + statFormatters
