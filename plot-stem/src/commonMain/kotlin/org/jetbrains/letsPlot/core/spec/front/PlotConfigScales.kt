@@ -39,6 +39,7 @@ internal object PlotConfigScales {
         val aesSet = setup.mappedAesWithoutStatPositional() + setOf(Aes.X, Aes.Y)
 
         val variablesByMappedAes = setup.variablesByMappedAes
+        val formatterByAes = setup.formatterByAes
 
         // Create scales for all aes.
         val scaleByAes = HashMap<Aes<*>, Scale>()
@@ -46,10 +47,7 @@ internal object PlotConfigScales {
             val guideTitle = guideOptionsMap[GuideKey.fromAes(aes)]?.getTitle()
             val defaultName = PlotConfigUtil.defaultScaleName(aes, variablesByMappedAes)
             val scaleProvider = scaleProviderByAes.getValue(aes)
-            val defaultFormatter: (Any) -> String = layerConfigs
-                .map { layerConfig -> PlotGeomTilesUtil.createDefaultFormatters(layerConfig) }
-                .firstOrNull { it.contains(aes) }
-                .let { f -> f?.getValue(aes) } ?: { it.toString() }
+            val defaultFormatter = formatterByAes[aes] ?: { it.toString() }
 
             val scale = when (val transform = transformByAes.getValue(aes)) {
                 is DiscreteTransform -> scaleProvider.createScale(defaultName, defaultFormatter, transform, guideTitle)

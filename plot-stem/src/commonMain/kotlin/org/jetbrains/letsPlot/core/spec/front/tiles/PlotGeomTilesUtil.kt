@@ -113,16 +113,18 @@ internal object PlotGeomTilesUtil {
         }
     }
 
-    fun createDefaultFormatters(layerConfig: LayerConfig): Map<Any, (Any) -> String> {
-        val dataFormatters = layerConfig.dtypes.mapValues { (_, dtype) -> dtype.formatter }
+    fun generateDefaultFormatters(
+        varBindings: List<VarBinding>,
+        dtypes: Map<String, DataType>
+    ): Map<Any, (Any) -> String> {
+        val dataFormatters = dtypes.mapValues { (_, dtype) -> dtype.formatter }
         val statFormatters = Stats.VARS.mapValues { DataType.FLOATING.formatter }
         val varFormatters = dataFormatters + statFormatters
 
-        val aesFormatters = layerConfig.varBindings
+        val aesFormatters = varBindings
             .associate { it.aes to variableToFormatter(it.variable, varFormatters) }
 
         return varFormatters + aesFormatters
-
     }
 
     private fun variableToFormatter(
@@ -136,6 +138,10 @@ internal object PlotGeomTilesUtil {
         return variable.name.split(".").lastOrNull()?.let { varName ->
             varFormatters[varName] ?: DataType.STRING.formatter
         } ?: DataType.STRING.formatter
+    }
+
+    private fun createDefaultFormatters(layerConfig: LayerConfig): Map<Any, (Any) -> String> {
+        return generateDefaultFormatters(layerConfig.varBindings, layerConfig.dtypes)
     }
 
     fun createLayerBuilder(

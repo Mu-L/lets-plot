@@ -5,6 +5,7 @@
 
 package org.jetbrains.letsPlot.core.plot.base.scale
 
+import org.jetbrains.letsPlot.commons.formatting.number.NumberFormat
 import org.jetbrains.letsPlot.core.plot.base.Aes
 import org.jetbrains.letsPlot.core.plot.base.DiscreteTransform
 import org.jetbrains.letsPlot.core.plot.base.Scale
@@ -38,7 +39,7 @@ object Scales {
         ): Scale {
             return DiscreteScale(
                 name,
-                { it.toString() }, // TODO
+                ::defaultFormatter,
                 DiscreteTransform(domainValues, domainLimits),
             )
         }
@@ -48,13 +49,13 @@ object Scales {
             domainValues: List<Any>,
         ): Scale {
             val transform = DiscreteTransform(domainValues, emptyList())
-            return DiscreteScale(name, { it.toString() }, transform) // TODO
+            return DiscreteScale(name, ::defaultFormatter, transform)
         }
 
         fun continuousDomain(name: String, aes: Aes<*>): Scale {
             return ContinuousScale(
                 name,
-                { it.toString() }, // TODO
+                ::defaultFormatter,
                 aes.isNumeric
             )
         }
@@ -62,9 +63,15 @@ object Scales {
         fun continuousDomainNumericRange(name: String): Scale {
             return ContinuousScale(
                 name,
-                { it.toString() }, // TODO
+                ::defaultFormatter,
                 true
             )
+        }
+
+        fun defaultFormatter(v: Any): String = when (v) {
+            is Int -> NumberFormat("d").apply(v)
+            is Number -> NumberFormat(",~g").apply(v)
+            else -> v.toString()
         }
     }
 }

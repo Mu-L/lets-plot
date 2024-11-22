@@ -10,6 +10,7 @@ import org.jetbrains.letsPlot.core.plot.base.Aes
 import org.jetbrains.letsPlot.core.plot.base.Scale
 import org.jetbrains.letsPlot.core.plot.base.scale.BreaksGenerator
 import org.jetbrains.letsPlot.core.plot.base.scale.ScaleBreaks
+import org.jetbrains.letsPlot.core.plot.base.scale.Scales
 import org.jetbrains.letsPlot.core.plot.base.scale.transform.Transforms
 import org.junit.Test
 import kotlin.test.assertSame
@@ -34,7 +35,7 @@ internal class ScaleProviderBuilderTest {
         // continuous scale
         val scale = scaleProvider.createScale(
             "X-scale",
-            { it.toString() }, // TODO
+            Scales.DemoAndTest::defaultFormatter,
             Transforms.IDENTITY,
             continuousRange = false,
             guideBreaks = null,

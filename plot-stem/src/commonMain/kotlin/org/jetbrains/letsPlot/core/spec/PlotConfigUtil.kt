@@ -6,6 +6,7 @@
 package org.jetbrains.letsPlot.core.spec
 
 import org.jetbrains.letsPlot.commons.interval.DoubleSpan
+import org.jetbrains.letsPlot.core.commons.data.DataType
 import org.jetbrains.letsPlot.core.commons.data.SeriesUtil
 import org.jetbrains.letsPlot.core.plot.base.Aes
 import org.jetbrains.letsPlot.core.plot.base.ContinuousTransform
@@ -15,6 +16,7 @@ import org.jetbrains.letsPlot.core.plot.builder.assemble.PlotFacets
 import org.jetbrains.letsPlot.core.spec.config.*
 import org.jetbrains.letsPlot.core.spec.config.PlotConfig.Companion.PLOT_COMPUTATION_MESSAGES
 import org.jetbrains.letsPlot.core.spec.conversion.AesOptionConversion
+import org.jetbrains.letsPlot.core.spec.front.tiles.PlotGeomTilesUtil
 
 internal object PlotConfigUtil {
 
@@ -93,6 +95,7 @@ internal object PlotConfigUtil {
         return createPlotAesBindingSetup(
             bindingsByLayer = layerConfigs.map { it.varBindings },
             dataByLayer = layerConfigs.map { it.combinedData },
+            dataTypeByLayer = layerConfigs.map { it.dtypes },
             excludeStatVariables
         )
     }
@@ -100,6 +103,7 @@ internal object PlotConfigUtil {
     internal fun createPlotAesBindingSetup(
         bindingsByLayer: List<List<VarBinding>>,
         dataByLayer: List<DataFrame>,
+        dataTypeByLayer: List<Map<String, DataType>>,
         excludeStatVariables: Boolean
     ): PlotAesBindingSetup {
 
@@ -109,6 +113,7 @@ internal object PlotConfigUtil {
             bindingsByLayer,
             dataByLayer,
         )
+        val formatterByAes = associateAesWithFormatter(bindingsByLayer, dataTypeByLayer)
 
         val varBindings = bindingsByLayer.flatMap { it }
         val variablesByMappedAes = associateAesWithMappedVariables(varBindings)
@@ -116,6 +121,7 @@ internal object PlotConfigUtil {
         return PlotAesBindingSetup(
             varBindings = varBindings,
             dataByVarBinding = dataByVarBinding,
+            formatterByAes = formatterByAes,
             variablesByMappedAes = variablesByMappedAes,
         )
     }
@@ -146,6 +152,18 @@ internal object PlotConfigUtil {
         }
 
         return dataByVarBinding
+    }
+
+    private fun associateAesWithFormatter(
+        bindingsByLayer: List<List<VarBinding>>,
+        dataTypesByLayer: List<Map<String, DataType>>,
+    ): Map<Aes<*>, (Any) -> String> {
+        return (bindingsByLayer zip dataTypesByLayer)
+            .flatMap { (varBindings, dtypes) ->
+                PlotGeomTilesUtil.generateDefaultFormatters(varBindings, dtypes)
+                    .toList()
+                    .filter { (v, _) -> v is Aes<*> } as List<Pair<Aes<*>, (Any) -> String>>
+            }.toMap()
     }
 
     internal fun defaultScaleName(aes: Aes<*>, variablesByMappedAes: Map<Aes<*>, List<DataFrame.Variable>>): String {

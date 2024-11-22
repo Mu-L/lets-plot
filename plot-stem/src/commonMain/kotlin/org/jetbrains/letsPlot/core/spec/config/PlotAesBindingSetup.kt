@@ -13,6 +13,7 @@ internal class PlotAesBindingSetup(
     private val varBindings: List<VarBinding>,
 //    val dataByVarBinding: Map<VarBinding, DataFrame>,
     val dataByVarBinding: List<Pair<VarBinding, DataFrame>>,
+    val formatterByAes: Map<Aes<*>, (Any) -> String>,
     val variablesByMappedAes: Map<Aes<*>, List<DataFrame.Variable>>,
 
     ) {

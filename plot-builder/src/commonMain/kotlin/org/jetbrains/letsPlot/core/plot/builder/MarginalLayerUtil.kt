@@ -5,6 +5,7 @@
 
 package org.jetbrains.letsPlot.core.plot.builder
 
+import org.jetbrains.letsPlot.commons.formatting.number.NumberFormat
 import org.jetbrains.letsPlot.commons.interval.DoubleSpan
 import org.jetbrains.letsPlot.core.plot.base.Aes
 import org.jetbrains.letsPlot.core.plot.base.Scale
@@ -15,7 +16,7 @@ import org.jetbrains.letsPlot.core.plot.builder.assemble.PositionalScalesUtil
 import org.jetbrains.letsPlot.core.plot.builder.coord.CoordProvider
 
 object MarginalLayerUtil {
-    private val MARGINAL_SCALE = Scales.continuousDomain("marginal", { it.toString() }, true) // TODO
+    private val MARGINAL_SCALE = Scales.continuousDomain("marginal", ::defaultFormatter, true)
     private val MARGINAL_SCALE_REVERSED = MARGINAL_SCALE.with().continuousTransform(Transforms.REVERSE).build()
     private val MARGINAL_SCALES = mapOf(
         MarginSide.LEFT to MARGINAL_SCALE_REVERSED,
@@ -100,5 +101,11 @@ object MarginalLayerUtil {
                 MarginSide.TOP, MarginSide.BOTTOM -> if (isYAxis(aes)) MARGINAL_SCALES.getValue(margin) else scale
             }
         }
+    }
+
+    private fun defaultFormatter(v: Any): String = when (v) {
+        is Int -> NumberFormat("d").apply(v)
+        is Number -> NumberFormat(",~g").apply(v)
+        else -> v.toString()
     }
 }

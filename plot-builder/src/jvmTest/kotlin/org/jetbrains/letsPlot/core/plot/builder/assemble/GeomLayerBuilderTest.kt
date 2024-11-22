@@ -51,7 +51,7 @@ class GeomLayerBuilderTest {
         val scaleProvider = ScaleProviderHelper.createDefault(Aes.FILL)
         val scaleFill = scaleProvider.createScale(
             "cat",
-            { it.toString() }, // TODO
+            Scales.DemoAndTest::defaultFormatter,
             DiscreteTransform(data.distinctValues(cat), emptyList()),
             guideTitle = null
         )

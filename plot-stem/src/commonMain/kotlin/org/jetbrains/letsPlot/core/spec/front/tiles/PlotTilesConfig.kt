@@ -5,6 +5,7 @@
 
 package org.jetbrains.letsPlot.core.spec.front.tiles
 
+import org.jetbrains.letsPlot.core.commons.data.DataType
 import org.jetbrains.letsPlot.core.plot.base.*
 import org.jetbrains.letsPlot.core.plot.base.theme.FontFamilyRegistry
 import org.jetbrains.letsPlot.core.plot.base.theme.Theme
@@ -147,12 +148,22 @@ internal object PlotTilesConfig {
             )
         }
 
-        // Data by facet (tile).
+        // Data and data type by facet (tile).
         val dataByLayerByTile: List<MutableList<DataFrame>> = List(facets.numTiles) { ArrayList<DataFrame>() }
-        layerConfigs.map { it.combinedData }.forEach() { layerData ->
+        val dataTypeByLayerByTile: List<MutableList<Map<String, DataType>>> = List(facets.numTiles) { ArrayList<Map<String, DataType>>() }
+        layerConfigs.map { Pair(it.combinedData, it.dtypes) }.forEach { (layerData, layerDataTypes) ->
             val layerDataByTile = PlotConfigUtil.splitLayerDataByTile(layerData, facets)
+            val layerDataTypeByTile = layerDataByTile.map { tileDataFrame ->
+                layerDataTypes.filterKeys { columnName ->
+                    tileDataFrame.variables().map(DataFrame.Variable::name).firstOrNull { varName ->
+                        varName == columnName ||
+                        varName.split(".").lastOrNull() == columnName
+                    } != null
+                }
+            }
             layerDataByTile.forEachIndexed { tileIndex, data ->
                 dataByLayerByTile[tileIndex].add(data)
+                dataTypeByLayerByTile[tileIndex].add(layerDataTypeByTile[tileIndex])
             }
         }
 
@@ -163,6 +174,7 @@ internal object PlotTilesConfig {
                 commonScalesBeforeFacets,
                 bindingsByLayer,
                 dataByLayerByTile,
+                dataTypeByLayerByTile,
                 facets
             )
         }
@@ -203,6 +215,7 @@ internal object PlotTilesConfig {
         commonScalesBeforeFacets: Map<Aes<*>, Scale>,
         bindingsByLayer: List<List<VarBinding>>,
         dataByLayerByTile: List<List<DataFrame>>,
+        dataTypeByLayerByTile: List<List<Map<String, DataType>>>,
         facets: PlotFacets,
     ): Pair<List<DiscreteTransform>?, List<DiscreteTransform>?> {
 
@@ -229,6 +242,7 @@ internal object PlotTilesConfig {
                 positionalDiscreteAesSet,
                 bindingsByLayer,
                 dataByLayerByTile,
+                dataTypeByLayerByTile,
                 facets,
                 discreteTransformXBeforeFactes,
                 discreteTransformYBeforeFactes,
@@ -245,6 +259,7 @@ internal object PlotTilesConfig {
         positionalDiscreteAesSet: Set<Aes<*>>,
         bindingsByLayer: List<List<VarBinding>>,
         dataByLayerByTile: List<List<DataFrame>>,
+        dataTypeByLayerByTile: List<List<Map<String, DataType>>>,
         facets: PlotFacets,
         discreteTransformXBeforeFactes: DiscreteTransform?,
         discreteTransformYBeforeFactes: DiscreteTransform?,
@@ -255,10 +270,11 @@ internal object PlotTilesConfig {
 
         val discreteXDomainByTile = ArrayList<Collection<Any>>()
         val discreteYDomainByTile = ArrayList<Collection<Any>>()
-        for (dataByTileLayer: List<DataFrame> in dataByLayerByTile) {
+        for ((dataByTileLayer, dataTypeByTileLayer) in dataByLayerByTile zip dataTypeByLayerByTile) {
             val tileBindingSetup = PlotConfigUtil.createPlotAesBindingSetup(
                 bindingsByLayer = bindingsByLayer,
                 dataByLayer = dataByTileLayer,
+                dataTypeByLayer = dataTypeByTileLayer,
                 excludeStatVariables = false
             )
 

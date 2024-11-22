@@ -8,6 +8,7 @@ package org.jetbrains.letsPlot.core.plot.builder.scale
 import org.jetbrains.letsPlot.core.plot.base.Aes
 import org.jetbrains.letsPlot.core.plot.base.DataFrame
 import org.jetbrains.letsPlot.core.plot.base.DiscreteTransform
+import org.jetbrains.letsPlot.core.plot.base.scale.Scales
 import kotlin.test.Test
 
 class ScaleProviderHelperTest {
@@ -21,7 +22,7 @@ class ScaleProviderHelperTest {
 
         ScaleProviderHelper.createDefault(Aes.HJUST).createScale(
             "region",
-            { it.toString() }, // TODO
+            Scales.DemoAndTest::defaultFormatter,
             DiscreteTransform(df.distinctValues(region), emptyList()),
             guideTitle = null
         )
