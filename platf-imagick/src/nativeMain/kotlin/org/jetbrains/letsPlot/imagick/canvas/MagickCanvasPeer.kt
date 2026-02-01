@@ -2,6 +2,7 @@ package org.jetbrains.letsPlot.imagick.canvas
 
 import org.jetbrains.letsPlot.commons.encoding.Png
 import org.jetbrains.letsPlot.commons.geometry.Vector
+import org.jetbrains.letsPlot.commons.image.loadImage
 import org.jetbrains.letsPlot.commons.intern.async.Async
 import org.jetbrains.letsPlot.commons.intern.async.Asyncs
 import org.jetbrains.letsPlot.commons.values.Bitmap
@@ -31,6 +32,8 @@ class MagickCanvasPeer(
     }
 
     override fun decodePng(png: ByteArray): Async<Canvas.Snapshot> {
-        TODO("Not yet implemented")
+        //val bitmap = Png.decode(png)
+        val bitmap = loadImage(png)
+        return Asyncs.constant(MagickSnapshot.fromBitmap(bitmap))
     }
 }

@@ -124,6 +124,7 @@ object PlotExportCommon {
         onFrame(now())
         delay(16.milliseconds)
 
+        var i = 0
         do {
             if (now() > timeout.inWholeMilliseconds) {
                 return false
@@ -132,6 +133,7 @@ object PlotExportCommon {
             onFrame(now())
 
             delay(4.milliseconds)
+            i++
         } while (!isReady())
 
         delay(16.milliseconds)

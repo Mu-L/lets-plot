@@ -1,13 +1,43 @@
 package org.jetbrains.letsPlot.awt.plot
 
 import demoAndTestShared.parsePlotSpec
+import org.jetbrains.letsPlot.visualtesting.plot.runStubRasterTileServer
+import org.jetbrains.letsPlot.visualtesting.plot.runStubVectorTileServer
 import kotlin.test.Ignore
 import kotlin.test.Test
 
+@Ignore("Flaky tests - sometimes even local tiles are not loaded")
 class LiveMapTest : VisualPlotTestBase() {
+    @Ignore("External service - may cause test instability. Enable for debugging purposes only.")
     @Test
-    @Ignore("Need local tile server")
-    fun `minard with default tiles`() {
+    fun `geom_livemap prod vector tiles`() {
+        val spec = """
+            |{
+            |  "kind": "plot",
+            |  "layers": [
+            |    {
+            |      "geom": "livemap",
+            |      "zoom": 1.0,
+            |      "tiles": {
+            |        "kind": "vector_lets_plot",
+            |        "url": "wss://tiles.datalore.jetbrains.com",
+            |        "theme": "color",
+            |        "attribution": "<a href=\"https://lets-plot.org\">\u00a9 Lets-Plot</a>, map data: <a href=\"https://www.openstreetmap.org/copyright\">\u00a9 OpenStreetMap contributors</a>."
+            |      },
+            |      "geocoding": { "url": "https://geo2.datalore.jetbrains.com/map_data/geocoding" }
+            |    },
+            |    { "geom": "point", "x": 0.0, "y": 0.0 }
+            |  ]
+            |}            
+        """.trimMargin()
+
+        val plotSpec = parsePlotSpec(spec).themeTextNotoSans()
+        assertPlot("geom_livemap_prod_vector_tiles.png", plotSpec, fontManager = fontManager)
+    }
+
+    @Test
+    @Ignore("External service - may cause test instability. Enable for debugging purposes only.")
+    fun `geom_livemap prod minard`() {
         val spec = parsePlotSpec("""
             |{
             |    "data": {
@@ -50,11 +80,11 @@ class LiveMapTest : VisualPlotTestBase() {
 
         val plotSpec = spec.themeTextNotoSans()
 
-        assertPlot("geom_livemap_minard.png", plotSpec, fontManager = fontManager)
+        assertPlot("geom_livemap_prod_minard.png", plotSpec, fontManager = fontManager)
     }
 
     @Test
-    @Ignore("Need local tile server")
+    @Ignore("External service - may cause test instability. Enable for debugging purposes only.")
     fun `geom_livemap nasa tiles`() {
         val spec = parsePlotSpec("""
             |{
@@ -72,10 +102,79 @@ class LiveMapTest : VisualPlotTestBase() {
             |      "geocoding": { "url": "https://geo2.datalore.jetbrains.com/map_data/geocoding" }
             |    }
             |  ]
-            |}            
+            |}
         """.trimMargin())
 
         val plotSpec = spec.themeTextNotoSans()
         assertPlot("geom_livemap_nasa_tiles.png", plotSpec, fontManager = fontManager)
+    }
+
+    @Test
+    fun `geom_livemap test png tiles`() {
+        runStubRasterTileServer("png") { url ->
+            val spec = parsePlotSpec("""
+                |{
+                |  "kind": "plot",
+                |  "layers": [
+                |    {
+                |      "geom": "livemap",
+                |      "zoom": 1,
+                |      "tiles": { "kind": "raster_zxy", "url": "$url", "attribution": "Lets-Plot" }
+                |    },
+                |    { "geom": "point", "x": 0, "y": 0 }
+                |  ]
+                |}
+            """.trimMargin()
+            )
+
+            val plotSpec = spec.themeTextNotoSans()
+            assertPlot("geom_livemap_test_png_tiles.png", plotSpec, fontManager = fontManager)
+        }
+    }
+
+    @Test
+    fun `geom_livemap test jpg tiles`() {
+        runStubRasterTileServer("jpg") { url ->
+            val spec = parsePlotSpec("""
+                |{
+                |  "kind": "plot",
+                |  "layers": [
+                |    {
+                |      "geom": "livemap",
+                |      "zoom": 1,
+                |      "tiles": { "kind": "raster_zxy", "url": "$url", "attribution": "Lets-Plot" }
+                |    },
+                |    { "geom": "point", "x": 0, "y": 0 }
+                |  ]
+                |}
+            """.trimMargin()
+            )
+
+            val plotSpec = spec.themeTextNotoSans()
+            assertPlot("geom_livemap_test_jpg_tiles.png", plotSpec, fontManager = fontManager)
+        }
+    }
+
+    @Test
+    fun `geom_livemap test vector tiles`() {
+        runStubVectorTileServer { url ->
+            val spec = parsePlotSpec("""
+                |{
+                |  "kind": "plot",
+                |  "layers": [
+                |    {
+                |      "geom": "livemap",
+                |      "zoom": 1,
+                |      "tiles": { "kind": "vector_lets_plot", "url": "$url", "attribution": "Lets-Plot" }
+                |    },
+                |    { "geom": "point", "x": 0, "y": 0 }
+                |  ]
+                |}
+            """.trimMargin()
+            )
+
+            val plotSpec = spec.themeTextNotoSans()
+            assertPlot("geom_livemap_test_vector_tiles.png", plotSpec, fontManager = fontManager)
+        }
     }
 }
