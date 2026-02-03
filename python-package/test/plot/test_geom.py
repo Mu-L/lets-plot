@@ -50,3 +50,18 @@ def test_simple_layer_tooltips():
 def test_layer_tooltips_with_str_list():
     spec = gg.ggplot() + gg.geom_point(tooltips=['a', 'b', 'c'])
     assert spec.as_dict()['layers'][0]['tooltips'] == {'formats': [], 'variables': ['a', 'b', 'c']}
+
+
+def test_layer_tooltips_with_str_tuple():
+    spec = gg.ggplot() + gg.geom_point(tooltips=('a', 'b', 'c'))
+    assert spec.as_dict()['layers'][0]['tooltips'] == {'formats': [], 'variables': ('a', 'b', 'c')}
+
+
+def test_layer_tooltips_none():
+    spec = gg.ggplot() + gg.geom_point(tooltips='none')
+    assert spec.as_dict()['layers'][0]['tooltips'] == 'none'
+
+
+def test_layer_tooltips_geom_blank():
+    spec = gg.ggplot() + gg.geom_blank()
+    assert spec.as_dict()['layers'][0] == { 'geom': 'blank', 'data_meta': {}, 'mapping': {}, 'inherit_aes': False,  'tooltips': 'none'}

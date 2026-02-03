@@ -5,7 +5,7 @@
 from lets_plot.geo_data_internals.utils import is_geocoder
 
 from .core import FeatureSpec, LayerSpec
-from .tooltip import layer_tooltips, LayerTooltipsSpec
+from .tooltip import layer_tooltips
 from .util import as_annotated_data, is_geo_data_frame, geo_data_frame_to_crs, get_geo_data_frame_meta, key_int2str
 
 #
@@ -9212,7 +9212,8 @@ def _geom(name, *,
         data = geo_data_frame_to_crs(data, kwargs.get('use_crs'))
         data_meta['data_meta'].update(get_geo_data_frame_meta(data))
 
-    if tooltips is not None and not isinstance(tooltips, LayerTooltipsSpec):
+
+    if isinstance(tooltips, list) or isinstance(tooltips, tuple):
         tooltips = layer_tooltips(tooltips)
 
     return LayerSpec(geom=name,
