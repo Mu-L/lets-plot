@@ -1,6 +1,7 @@
 package org.jetbrains.letsPlot.awt.plot
 
 import demoAndTestShared.parsePlotSpec
+import org.jetbrains.letsPlot.awt.NotoFontManager
 import org.jetbrains.letsPlot.awt.canvas.AwtCanvasPeer
 import org.jetbrains.letsPlot.commons.event.MouseEvent.Companion.leftButton
 import org.jetbrains.letsPlot.commons.event.MouseEvent.Companion.noButton
@@ -44,7 +45,7 @@ class InteractivityTest : VisualPlotTestBase() {
             |}            
         """.trimMargin()
 
-        val rawPlotSpec = parsePlotSpec(spec).themeTextNotoSans()
+        val rawPlotSpec = parsePlotSpec(spec)
         val processedPlotSpec = MonolithicCommon.processRawSpecs(rawPlotSpec, frontendOnly = false)
         val plotCanvasFigure = PlotCanvasFigure()
         plotCanvasFigure.update(
@@ -53,7 +54,7 @@ class InteractivityTest : VisualPlotTestBase() {
             computationMessagesHandler = { }
         )
 
-        val awtCanvasPeer = AwtCanvasPeer()
+        val awtCanvasPeer = AwtCanvasPeer(fontManager = NotoFontManager.INSTANCE)
         plotCanvasFigure.mapToCanvas(awtCanvasPeer)
 
         plotCanvasFigure.mouseEventPeer.dispatch(MOUSE_MOVED, noButton(200, 100))
@@ -93,7 +94,7 @@ class InteractivityTest : VisualPlotTestBase() {
             |}
         """.trimMargin()
 
-        val rawPlotSpec = parsePlotSpec(spec).themeTextNotoSans()
+        val rawPlotSpec = parsePlotSpec(spec)
         val processedPlotSpec = MonolithicCommon.processRawSpecs(rawPlotSpec, frontendOnly = false)
 
         var specOverrideList = emptyList<Map<String, Any>>()
@@ -118,7 +119,7 @@ class InteractivityTest : VisualPlotTestBase() {
 
         plotCanvasFigure.update(processedPlotSpec, keepFigureDefaultSize(), computationMessagesHandler = { })
 
-        val awtCanvasPeer = AwtCanvasPeer()
+        val awtCanvasPeer = AwtCanvasPeer(fontManager = NotoFontManager.INSTANCE)
         plotCanvasFigure.mapToCanvas(awtCanvasPeer)
 
         // IMPORTANT: should be set after mapping to canvas
