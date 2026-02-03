@@ -49,3 +49,4 @@
 - geom_imshow: unclear error message when mixing transparencies [[#1088](https://github.com/JetBrains/lets-plot/issues/1088)].
 - geom_imshow and scale_y_reverse [[#1210](https://github.com/JetBrains/lets-plot/issues/1210)].
 - Nice to be able to get a list of colors from a color scale object [[#1444](https://github.com/JetBrains/lets-plot/issues/1444)].
+- allow tooltips param to accept list [[#1455](https://github.com/JetBrains/lets-plot/issues/1455)].

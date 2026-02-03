@@ -5,6 +5,7 @@
 from lets_plot.geo_data_internals.utils import is_geocoder
 
 from .core import FeatureSpec, LayerSpec
+from .tooltip import layer_tooltips, LayerTooltipsSpec
 from .util import as_annotated_data, is_geo_data_frame, geo_data_frame_to_crs, get_geo_data_frame_meta, key_int2str
 
 #
@@ -28,7 +29,8 @@ __all__ = ['geom_point', 'geom_path', 'geom_line',
            'geom_segment', 'geom_curve', 'geom_spoke',
            'geom_text', 'geom_label', 'geom_text_repel', 'geom_label_repel', 'geom_pie', 'geom_lollipop',
            'geom_count',
-           'geom_blank', 'geom_stat_r2']
+           'geom_blank', 'geom_stat_r2',
+           'layer_tooltips']
 
 
 def geom_point(mapping=None, *, data=None, stat=None, position=None, show_legend=None, inherit_aes=None,
@@ -9209,6 +9211,9 @@ def _geom(name, *,
     if is_geo_data_frame(data) and not is_geo_data_frame(kwargs.get('map')):
         data = geo_data_frame_to_crs(data, kwargs.get('use_crs'))
         data_meta['data_meta'].update(get_geo_data_frame_meta(data))
+
+    if tooltips is not None and not isinstance(tooltips, LayerTooltipsSpec):
+        tooltips = layer_tooltips(tooltips)
 
     return LayerSpec(geom=name,
                      stat=stat,
