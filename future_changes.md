@@ -17,6 +17,8 @@
   - New `overflow` parameter in `scale_color_brewer()` / `scale_fill_brewer()`: controls how colors are generated when more colors are needed than the palette provides. \
     Options: `'interpolate'` (`'i'`), `'cycle'` (`'c'`), `'generate'` (`'g'`).
 
+    See: [example notebook](https://raw.githack.com/JetBrains/lets-plot/master/docs/f-26a/scale_brewer_overflow.html).
+
 - Positional Scales:
   - New `break_width` parameter specifying a fixed distance between axis breaks.
 
