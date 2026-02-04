@@ -27,7 +27,7 @@ class TooltipSpecification(
     fun hideTooltips() = tooltipLinePatterns?.isEmpty() ?: false
 
     companion object {
-        fun withoutTooltip() = TooltipSpecification(
+        val NONE = TooltipSpecification(
             valueSources = emptyList(),
             tooltipLinePatterns = emptyList(),
             tooltipProperties = TooltipProperties.NONE,

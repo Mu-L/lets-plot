@@ -547,14 +547,9 @@ class LayerConfig constructor(
                     ).createTooltips()
                 }
 
-                NONE -> {
-                    // not show tooltips
-                    TooltipSpecification.withoutTooltip()
-                }
+                NONE -> TooltipSpecification.NONE
 
-                else -> {
-                    error("Incorrect tooltips specification")
-                }
+                else -> error("Incorrect tooltips specification")
             }
         }
 

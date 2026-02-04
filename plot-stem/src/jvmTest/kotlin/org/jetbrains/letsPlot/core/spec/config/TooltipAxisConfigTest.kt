@@ -321,7 +321,7 @@ class TooltipAxisConfigTest {
 
         private fun assertGeneralTooltip(geomLayer: GeomLayer, expected: String, method: (String) -> Unit = ::fail) {
             val ctx = TestingPlotContext.create(geomLayer)
-            val dataPoints = geomLayer.createContextualMapping().getDataPoints(index = 0, ctx)
+            val dataPoints = geomLayer.createContextualMapping()!!.getDataPoints(index = 0, ctx)
             val generalTooltip = dataPoints
                 .filterNot(LineSpec.DataPoint::isSide)
                 .map(LineSpec.DataPoint::value)
@@ -331,7 +331,7 @@ class TooltipAxisConfigTest {
 
         private fun assertYAxisTooltip(geomLayer: GeomLayer, expected: String?, method: (String) -> Unit = ::fail) {
             val ctx = TestingPlotContext.create(geomLayer)
-            val dataPoints = geomLayer.createContextualMapping().getDataPoints(index = 0, ctx)
+            val dataPoints = geomLayer.createContextualMapping()!!.getDataPoints(index = 0, ctx)
             val yAxisTooltip = dataPoints
                 .filter(LineSpec.DataPoint::isAxis)
                 .filter { it.aes == org.jetbrains.letsPlot.core.plot.base.Aes.Y }

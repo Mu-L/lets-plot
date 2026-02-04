@@ -40,4 +40,8 @@ interface GeomTargetLocator {
         val isCrosshairEnabled: Boolean,
         val hitShapeKind: HitShape.Kind
     )
+
+    object NullGeomTargetLocator : GeomTargetLocator {
+        override fun search(coord: DoubleVector): LookupResult? = null
+    }
 }

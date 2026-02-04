@@ -22,7 +22,7 @@ object TooltipTestUtil {
 
     private fun createTooltipSpecs(layer: GeomLayer, hitIndex: Int, tipLayoutHint: TipLayoutHint): List<TooltipSpec> {
         val factory = TooltipSpecFactory(
-            contextualMapping = layer.createContextualMapping(),
+            contextualMapping = layer.createContextualMapping()!!,
             axisOrigin = ZERO,
             flippedAxis = false,
             xAxisTheme = axisTheme,

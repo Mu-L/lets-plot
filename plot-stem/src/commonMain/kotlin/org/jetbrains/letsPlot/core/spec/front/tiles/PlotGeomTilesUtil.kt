@@ -15,6 +15,7 @@ import org.jetbrains.letsPlot.core.plot.base.stat.Stats
 import org.jetbrains.letsPlot.core.plot.base.theme.ExponentFormat
 import org.jetbrains.letsPlot.core.plot.base.theme.FontFamilyRegistry
 import org.jetbrains.letsPlot.core.plot.base.theme.Theme
+import org.jetbrains.letsPlot.core.plot.base.tooltip.TooltipSpecification
 import org.jetbrains.letsPlot.core.plot.base.tooltip.conf.GeomInteraction
 import org.jetbrains.letsPlot.core.plot.base.tooltip.conf.GeomInteractionUtil
 import org.jetbrains.letsPlot.core.plot.builder.MarginalLayerUtil
@@ -105,21 +106,25 @@ internal object PlotGeomTilesUtil {
                                 || !layer.tooltips.tooltipLinePatterns.isNullOrEmpty() }
                 }
 
-                GeomInteractionUtil.createGeomInteractionBuilder(
-                    layerConfig.varBindings.associate { it.aes to it.variable },
-                    scaleMapByLayer[layerIndex],
-                    otherLayerWithTooltips,
-                    isLiveMap,
-                    coordProvider.isPolar,
-                    theme,
-                    layerConfig.geomProto.geomKind,
-                    layerConfig.statKind,
-                    layerConfig.tooltips,
-                    layerConfig.isYOrientation,
-                    layerConfig.constantsMap,
-                    layerConfig.renderedAes,
-                    layerConfig::getOriginalVariableName
-                ).build()
+                if (layerConfig.tooltips == TooltipSpecification.NONE) {
+                    null
+                } else {
+                    GeomInteractionUtil.createGeomInteractionBuilder(
+                        layerConfig.varBindings.associate { it.aes to it.variable },
+                        scaleMapByLayer[layerIndex],
+                        otherLayerWithTooltips,
+                        isLiveMap,
+                        coordProvider.isPolar,
+                        theme,
+                        layerConfig.geomProto.geomKind,
+                        layerConfig.statKind,
+                        layerConfig.tooltips,
+                        layerConfig.isYOrientation,
+                        layerConfig.constantsMap,
+                        layerConfig.renderedAes,
+                        layerConfig::getOriginalVariableName
+                    ).build()
+                }
             }
         }
     }
