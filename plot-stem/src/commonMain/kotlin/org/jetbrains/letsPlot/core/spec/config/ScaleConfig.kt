@@ -56,6 +56,7 @@ import org.jetbrains.letsPlot.core.spec.Option.Scale.MapperKind.SIZE_AREA
 import org.jetbrains.letsPlot.core.spec.Option.Scale.NAME
 import org.jetbrains.letsPlot.core.spec.Option.Scale.NA_VALUE
 import org.jetbrains.letsPlot.core.spec.Option.Scale.OUTPUT_VALUES
+import org.jetbrains.letsPlot.core.spec.Option.Scale.OVERFLOW
 import org.jetbrains.letsPlot.core.spec.Option.Scale.PALETTE
 import org.jetbrains.letsPlot.core.spec.Option.Scale.PALETTE_TYPE
 import org.jetbrains.letsPlot.core.spec.Option.Scale.RANGE
@@ -65,6 +66,7 @@ import org.jetbrains.letsPlot.core.spec.Option.Scale.START
 import org.jetbrains.letsPlot.core.spec.Option.Scale.START_HUE
 import org.jetbrains.letsPlot.core.spec.Option.Scale.Viridis
 import org.jetbrains.letsPlot.core.spec.Option.TransformName
+import org.jetbrains.letsPlot.core.commons.color.PaletteOverflow
 import org.jetbrains.letsPlot.core.spec.conversion.AesOptionConversion
 import org.jetbrains.letsPlot.core.spec.conversion.TypedContinuousIdentityMappers
 
@@ -189,6 +191,7 @@ class ScaleConfig<T> constructor(
                     getString(PALETTE_TYPE),
                     get(PALETTE),
                     getDouble(DIRECTION),
+                    parseOverflow(getString(OVERFLOW)),
                     naValue as Color
                 )
 
@@ -378,6 +381,18 @@ class ScaleConfig<T> constructor(
             val accessor = OptionsAccessor(options)
             require(accessor.has(AES)) { "Required parameter '$AES' is missing" }
             return Option.Mapping.toAes(accessor.getStringSafe(AES))
+        }
+
+        private fun parseOverflow(value: String?): PaletteOverflow {
+            if (value == null) return PaletteOverflow.AUTO
+            return when (value.lowercase()) {
+                "interpolate", "i" -> PaletteOverflow.INTERPOLATE
+                "cycle", "c" -> PaletteOverflow.CYCLE
+                "generate", "g" -> PaletteOverflow.GENERATE
+                else -> throw IllegalArgumentException(
+                    "overflow: expected one of 'interpolate' ('i'), 'cycle' ('c'), 'generate' ('g') but was: '$value'"
+                )
+            }
         }
 
         fun <T> createIdentityMapperProvider(

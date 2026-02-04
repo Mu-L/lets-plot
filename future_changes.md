@@ -14,6 +14,9 @@
 
     See: [example notebook](https://raw.githack.com/JetBrains/lets-plot/master/docs/f-26a/scale_color_palette.html).
 
+  - New `overflow` parameter in `scale_color_brewer()` / `scale_fill_brewer()`: controls how colors are generated when more colors are needed than the palette provides. \
+    Options: `'interpolate'` (`'i'`), `'cycle'` (`'c'`), `'generate'` (`'g'`).
+
 - Positional Scales:
   - New `break_width` parameter specifying a fixed distance between axis breaks.
 
@@ -36,8 +39,10 @@
 - [**BREAKING**]: Removed `plot-image-export` module. Use `PlotImageExport` from `platf-awt` module instead.
 - Missing values in `geom_area_ridges()` create gaps in geometries instead of being interpolated over.
 - [wip] Added warning messages about the removal of invalid points during geometry construction for geom_point(), geom_path(), and geom_line() layers. [[#81](https://github.com/JetBrains/lets-plot-kotlin/issues/81)].
-- [**BREAKING**]: ColorBrewer palettes: when the requested number of colors exceeds the palette's maximum size, colors are now interpolated to generate unique colors. \
-  Previously, depending on the palette type, this either resulted in duplicate colors or random additional colors.
+- [**BREAKING**]: ColorBrewer palettes: changed default behavior when the requested number of colors exceeds the palette's maximum size. \
+  Now defaults to `'interpolate'` for sequential/diverging palettes and `'generate'` for qualitative palettes. \
+  Previously, depending on the palette type, this either resulted in duplicate colors or random additional colors. \
+  Use the new `overflow` parameter to explicitly control this behavior.
 - Discrete color scales (Brewer, Manual) now produce a 'colorbar' guide when used with continuous data. \
   Previously they produced a 'legend' guide regardless of the data type.
 

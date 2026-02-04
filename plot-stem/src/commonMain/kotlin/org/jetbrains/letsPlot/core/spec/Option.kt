@@ -737,6 +737,7 @@ object Option {
         // color brewer
         const val PALETTE_TYPE = "type"
         const val PALETTE = "palette"
+        const val OVERFLOW = "overflow"
 
         // range
         const val RANGE = "range"
