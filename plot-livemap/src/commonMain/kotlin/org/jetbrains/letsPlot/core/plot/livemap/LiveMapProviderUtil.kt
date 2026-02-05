@@ -255,7 +255,9 @@ object LiveMapProviderUtil {
                         distance = hoverObjects.maxOf { it.distance },
                         geomKind = layer.geomKind,
                         contextualMapping = contextualMapping!!,
-                        isCrosshairEnabled = false, // no crosshair on livemap,
+                        isCrosshairEnabled = contextualMapping.isCrosshairEnabled,
+                        hasGeneralTooltip = contextualMapping.hasGeneralTooltip,
+                        hasAxisTooltip = contextualMapping.hasAxisTooltip,
                         hitShapeKind = when (hoverObjects.first().kind) {
                             HoverObjectKind.POINT -> HitShape.Kind.POINT
                             HoverObjectKind.PATH -> HitShape.Kind.PATH
