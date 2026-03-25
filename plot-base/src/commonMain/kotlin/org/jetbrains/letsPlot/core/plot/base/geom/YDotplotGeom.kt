@@ -120,7 +120,7 @@ class YDotplotGeom : DotplotGeom(), WithHeight {
                 DoubleVector(height, width)
             )
         }
-        val colorMarkerMapper = HintColorUtil.createColorMarkerMapper(GeomKind.Y_DOT_PLOT, ctx)
+        val colorMarkerMapper = HintColorUtil.createColorMarkerMapper(ctx)
 
         ctx.targetCollector.addRectangle(
             p.index(),
