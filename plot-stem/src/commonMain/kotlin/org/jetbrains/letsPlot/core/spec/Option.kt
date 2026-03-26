@@ -136,6 +136,7 @@ object Option {
             const val NAME = Meta.NAME
             const val SUBPLOTS_GRID = "grid"
             const val SUBPLOTS_FREE = "free"
+            const val SUBPLOTS_DECK = "deck"
 
             const val GUIDES = "guides"
         }
@@ -157,6 +158,20 @@ object Option {
                 const val SHARE_ALL = "all"
                 const val SHARE_ROW = "row"
                 const val SHARE_COL = "col"
+            }
+        }
+
+        /**
+         * Deck (overlay) layout (`ggdeck`)
+         */
+        object Deck {
+            const val SCALE_SHARE = "scale_share" // x, y, all, none
+
+            object ScaleShare {
+                const val X = "x"
+                const val Y = "y"
+                const val ALL = "all"
+                const val NONE = "none"
             }
         }
 
