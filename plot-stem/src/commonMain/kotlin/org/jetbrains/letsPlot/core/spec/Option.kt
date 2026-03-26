@@ -940,9 +940,17 @@ object Option {
         const val AXIS_TICKS_X = ThemeOption.AXIS_TICKS_X
         const val AXIS_TICKS_Y = ThemeOption.AXIS_TICKS_Y
 
+        const val AXIS_MINOR_TICKS = ThemeOption.AXIS_MINOR_TICKS
+        const val AXIS_MINOR_TICKS_X = ThemeOption.AXIS_MINOR_TICKS_X
+        const val AXIS_MINOR_TICKS_Y = ThemeOption.AXIS_MINOR_TICKS_Y
+
         const val AXIS_TICKS_LENGTH = ThemeOption.AXIS_TICKS_LENGTH
         const val AXIS_TICKS_LENGTH_X = ThemeOption.AXIS_TICKS_LENGTH_X
         const val AXIS_TICKS_LENGTH_Y = ThemeOption.AXIS_TICKS_LENGTH_Y
+
+        const val AXIS_MINOR_TICKS_LENGTH = ThemeOption.AXIS_TICKS_LENGTH
+        const val AXIS_MINOR_TICKS_LENGTH_X = ThemeOption.AXIS_TICKS_LENGTH_X
+        const val AXIS_MINOR_TICKS_LENGTH_Y = ThemeOption.AXIS_TICKS_LENGTH_Y
 
         const val AXIS_LINE = ThemeOption.AXIS_LINE
         const val AXIS_LINE_X = ThemeOption.AXIS_LINE_X
