@@ -26,7 +26,6 @@ import org.jetbrains.letsPlot.core.spec.Option.Plot.TAG_TEXT
 import org.jetbrains.letsPlot.core.spec.Option.Plot.THEME
 import org.jetbrains.letsPlot.core.spec.Option.Plot.TITLE
 import org.jetbrains.letsPlot.core.spec.Option.Plot.TITLE_TEXT
-import org.jetbrains.letsPlot.core.spec.Option.SubPlots.Deck
 import org.jetbrains.letsPlot.core.spec.Option.SubPlots.Free
 import org.jetbrains.letsPlot.core.spec.Option.SubPlots.Grid.COL_WIDTHS
 import org.jetbrains.letsPlot.core.spec.Option.SubPlots.Grid.FIT_CELL_ASPECT_RATIO
@@ -108,11 +107,11 @@ class CompositeFigureConfig constructor(
 
         // The "deck" layout: apply the "deck" overlay theme to all sub-figures except the first one.
         val figureSpecsFinal = if (layoutKind == Layout.SUBPLOTS_DECK) {
-            val (shareX, shareY) = readDeckLayoutScaleShareOption(layoutOptions)
+            val deckShareConfig = DeckScaleShareConfig(layoutOptions)
             figureSpecsWithToolbarOptions.mapIndexed { index, spec ->
                 when (index) {
                     0 -> spec  // The "base" figure.
-                    else -> spec?.let { applyDeckOverlayTheme(spec, shareX, shareY) }
+                    else -> spec?.let { applyDeckOverlayTheme(spec, deckShareConfig.shareX, deckShareConfig.shareY) }
                 }
             }
         } else {
@@ -162,7 +161,7 @@ class CompositeFigureConfig constructor(
         val rowHeights = layoutOptions.getDoubleList(ROW_HEIGHTS)
         val fitCellAspectRatio = layoutOptions.getBoolean(FIT_CELL_ASPECT_RATIO, true)
         val innerAlignment = layoutOptions.getBoolean(INNER_ALIGNMENT, false)
-        val shareConfig = CompositeFigureScaleShareConfig(layoutOptions)
+        val shareConfig = GridScaleShareConfig(layoutOptions)
         val scaleShareX: ScaleSharePolicy = shareConfig.shareX
         val scaleShareY: ScaleSharePolicy = shareConfig.shareY
 
@@ -243,23 +242,8 @@ class CompositeFigureConfig constructor(
     }
 
     private fun createDeckLayout(layoutOptions: OptionsAccessor): CompositeFigureLayout {
-        val (shareX, shareY) = readDeckLayoutScaleShareOption(layoutOptions)
-        return CompositeFigureDeckLayout(shareX = shareX, shareY = shareY)
-    }
-
-    private fun readDeckLayoutScaleShareOption(layoutOptions: OptionsAccessor): Pair<Boolean, Boolean> {
-        val scaleShare = layoutOptions.getString(Deck.SCALE_SHARE)?.lowercase()
-            ?: Deck.ScaleShare.X
-
-        return when (scaleShare) {
-            Deck.ScaleShare.X -> true to false
-            Deck.ScaleShare.Y -> false to true
-            Deck.ScaleShare.ALL -> true to true
-            Deck.ScaleShare.NONE -> false to false
-            else -> throw IllegalArgumentException(
-                "'scale_share'='$scaleShare'. Use: 'x', 'y', 'all', or 'none'."
-            )
-        }
+        val deckShareConfig = DeckScaleShareConfig(layoutOptions)
+        return CompositeFigureDeckLayout(shareX = deckShareConfig.shareX, shareY = deckShareConfig.shareY)
     }
 
     companion object {

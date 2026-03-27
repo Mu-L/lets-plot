@@ -5,7 +5,7 @@
 
 package org.jetbrains.letsPlot.core.plot.builder.layout.figure.composite
 
-object ScaleShareUtil {
+object GridScaleShareUtil {
 
     /**
      * Returns all sharing groups for a given policy.

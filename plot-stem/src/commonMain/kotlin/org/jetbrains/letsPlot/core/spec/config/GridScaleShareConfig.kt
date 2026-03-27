@@ -15,7 +15,7 @@ import org.jetbrains.letsPlot.core.spec.Option.SubPlots.Grid.Scales.SHARE_ROW
 /**
  * Parses scale sharing properties from a grid layout options map.
  */
-class CompositeFigureScaleShareConfig(
+class GridScaleShareConfig(
     layoutOpts: OptionsAccessor
 ) {
     val shareX: ScaleSharePolicy = parseSharePolicy(SubPlots.Grid.SHARE_X_SCALE, layoutOpts)
@@ -29,13 +29,13 @@ class CompositeFigureScaleShareConfig(
          * Parses scale sharing config from a composite figure spec.
          * Returns null if the spec doesn't have a grid layout.
          */
-        fun fromCompositeFigureSpec(compositeSpec: Map<String, Any>): CompositeFigureScaleShareConfig? {
+        fun fromCompositeFigureSpec(compositeSpec: Map<String, Any>): GridScaleShareConfig? {
             @Suppress("UNCHECKED_CAST")
             val layoutOptions = compositeSpec[SubPlots.LAYOUT] as? Map<String, Any> ?: return null
             val layoutName = layoutOptions[SubPlots.Layout.NAME] as? String
             if (layoutName != SubPlots.Layout.SUBPLOTS_GRID) return null
 
-            return CompositeFigureScaleShareConfig(OptionsAccessor(layoutOptions))
+            return GridScaleShareConfig(OptionsAccessor(layoutOptions))
         }
 
         private fun parseSharePolicy(option: String, layoutOpts: OptionsAccessor): ScaleSharePolicy {
