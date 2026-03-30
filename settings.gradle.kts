@@ -67,8 +67,11 @@ project(":demo-plot-jvm").projectDir = File("./demo/plot-jvm")
 include("demo-plot-browser")
 project(":demo-plot-browser").projectDir = File("./demo/plot-browser")
 
-include("demo-app-wasmjs")
-project(":demo-app-wasmjs").projectDir = File("./demo/app-wasmjs")
+include("demo-app-wasmjs-minimal")
+project(":demo-app-wasmjs-minimal").projectDir = File("./demo/app-wasmjs-minimal")
+
+include("demo-app-wasm-redraw")
+project(":demo-app-wasm-redraw").projectDir = File("./demo/app-wasm-redraw")
 
 include("demo-export")
 project(":demo-export").projectDir = File("./demo/export")

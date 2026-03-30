@@ -20,15 +20,17 @@ internal class LiveDemo {
     fun start() {
         val controls = document.getElementById(CONTROLS_ID) as HTMLElement
         val demoRoot = document.getElementById(DEMO_ROOT_ID) as HTMLElement
-        controls.style.display = "grid"
+        controls.style.display = "block"
         demoRoot.innerHTML = ""
 
         val toolbarHost = (document.createElement("div") as HTMLDivElement).apply {
-            className = "plot-toolbar"
             demoRoot.appendChild(this)
         }
         val canvasHost = (document.createElement("div") as HTMLDivElement).apply {
-            className = "plot-host"
+            setAttribute(
+                "style",
+                "width: 100%; min-width: ${MIN_PLOT_WIDTH}px; min-height: ${MIN_PLOT_HEIGHT}px; height: 640px; resize: both; overflow: hidden;"
+            )
             demoRoot.appendChild(this)
         }
         val sizingPolicy = SizingPolicy.fitContainerSize(preserveAspectRatio = false)
