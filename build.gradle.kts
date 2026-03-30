@@ -1,15 +1,18 @@
 /*
- * Copyright (c) 2024. JetBrains s.r.o.
+ * Copyright (c) 2026. JetBrains s.r.o.
  * Use of this source code is governed by the MIT license that can be found in the LICENSE file.
  */
 
 // okhttp3 added for publishing to the Sonatype Central Repository:
+@file:OptIn(ExperimentalWasmDsl::class)
+
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
 import org.gradle.internal.os.OperatingSystem
 import org.gradle.jvm.tasks.Jar
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
@@ -304,7 +307,9 @@ val multiPlatformCoreModulesForPublish = listOf(
     "plot-raster",
     "plot-stem",
     "plot-livemap",
-    "visual-testing"
+    "visual-testing",
+    "platf-w3c",
+    "wasmjs-package"
 )
 
 subprojects {
@@ -361,6 +366,7 @@ subprojects {
             "platf-batik",
             "jvm",
             "js",
+            "wasmJs",
             "kotlinMultiplatform",
             "metadata"
         )

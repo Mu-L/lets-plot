@@ -1,0 +1,329 @@
+<!--
+  ~ Copyright (c) 2026. JetBrains s.r.o.
+  ~ Use of this source code is governed by the MIT license that can be found in the LICENSE file.
+  -->
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>app-wasmjs</title>
+    <style>
+        :root {
+            --bg: #eef2f5;
+            --panel: #ffffff;
+            --text: #17212b;
+            --muted: #4f5b66;
+            --border: #d8dee4;
+            --border-strong: #c7d0d9;
+            --accent: #0f766e;
+            --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 24px;
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, sans-serif;
+        }
+
+        .page {
+            min-height: calc(100vh - 48px);
+            max-width: 1080px;
+            margin: 0 auto;
+        }
+
+        .title {
+            margin: 0 0 6px;
+            font-size: 28px;
+            letter-spacing: -0.02em;
+        }
+
+        .status {
+            margin: 0 0 18px;
+            color: var(--muted);
+            max-width: 72ch;
+        }
+
+        .demo-switcher {
+            display: inline-flex;
+            gap: 10px;
+            margin: 0 0 18px;
+            padding: 6px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.72);
+            box-shadow: var(--shadow);
+        }
+
+        .demo-link {
+            display: inline-flex;
+            align-items: center;
+            min-height: 38px;
+            padding: 0 14px;
+            border-radius: 999px;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .demo-link:hover {
+            background: rgba(15, 118, 110, 0.1);
+        }
+
+        .demo-link-active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .description {
+            margin: 0 0 18px;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.72);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .controls {
+            display: none;
+            grid-template-columns: auto minmax(0, 1fr) auto;
+            align-items: start;
+            gap: 14px;
+            margin-bottom: 18px;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.72);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .control-block {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-title {
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .button {
+            padding: 10px 18px;
+            border-radius: 999px;
+            cursor: pointer;
+            font: inherit;
+        }
+
+        .button-primary {
+            border: none;
+            background: var(--accent);
+            color: white;
+        }
+
+        .button-secondary {
+            border: 1px solid var(--border-strong);
+            background: var(--panel);
+            color: var(--text);
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border: 1px solid var(--border-strong);
+            border-radius: 999px;
+            background: var(--panel);
+        }
+
+        .pill input {
+            font: inherit;
+        }
+
+        .pill-top {
+            align-self: start;
+            min-height: 42px;
+        }
+
+        .option-panel {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(120px, 1fr));
+            gap: 8px 10px;
+            padding: 0;
+        }
+
+        .option-chip {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .option-chip input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .option-chip span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 36px;
+            padding: 0 14px;
+            width: 100%;
+            border: 1px solid var(--border-strong);
+            border-radius: 999px;
+            background: var(--panel);
+            color: var(--text);
+            transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+        }
+
+        .option-chip input:checked + span {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .plot-toolbar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            min-height: 40px;
+            padding: 10px 12px 0;
+        }
+
+        .plot-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .plot-output {
+            width: 100%;
+        }
+
+        .plot-host {
+            display: block;
+            width: 100%;
+            height: min(70vh, 640px);
+            min-width: 320px;
+            min-height: 240px;
+            background: linear-gradient(180deg, rgba(238, 242, 245, 0.6), rgba(255, 255, 255, 0.95));
+            overflow: hidden;
+            resize: both;
+        }
+
+        @media (max-width: 920px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 560px) {
+            body {
+                padding: 16px;
+            }
+
+            .page {
+                min-height: calc(100vh - 32px);
+            }
+        }
+    </style>
+</head>
+<body>
+<main class="page">
+    <h2 class="title">Lets-Plot wasmJs</h2>
+    <nav class="demo-switcher" aria-label="Demo mode">
+        <a id="demo-simple-link" class="demo-link" href="?demo=simple">MonolithicWasmJs</a>
+        <a id="demo-live-link" class="demo-link" href="?demo=live">Live demo</a>
+    </nav>
+    <p class="status">Both demos are bundled into the same wasm/js application. No external Lets-Plot CDN script is used.</p>
+    <p id="status" class="description"></p>
+
+    <div id="controls" class="controls">
+        <div class="actions control-block">
+            <p class="control-title">Live data</p>
+            <div class="action-buttons">
+                <button id="toggle-button" class="button button-primary" type="button">Run</button>
+                <button id="reset-button" class="button button-secondary" type="button">Reset</button>
+            </div>
+        </div>
+
+        <div class="control-block">
+            <p class="control-title">Distribution</p>
+            <div class="option-panel" aria-label="Distribution">
+                <label class="option-chip">
+                    <input id="distribution-normal" type="radio" name="distribution" value="normal" checked>
+                    <span>Normal</span>
+                </label>
+                <label class="option-chip">
+                    <input id="distribution-shifted" type="radio" name="distribution" value="shifted">
+                    <span>Shifted</span>
+                </label>
+                <label class="option-chip">
+                    <input id="distribution-bimodal" type="radio" name="distribution" value="bimodal">
+                    <span>Bimodal</span>
+                </label>
+                <label class="option-chip">
+                    <input id="distribution-uniform" type="radio" name="distribution" value="uniform">
+                    <span>Uniform</span>
+                </label>
+                <label class="option-chip">
+                    <input id="distribution-laplace" type="radio" name="distribution" value="laplace">
+                    <span>Laplace</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="control-block">
+            <p class="control-title">View</p>
+            <label class="pill pill-top" for="limits-checkbox">
+                <input id="limits-checkbox" type="checkbox" checked>
+                <span>Lock axes</span>
+            </label>
+        </div>
+    </div>
+
+    <section id="demo-root" class="plot-card"></section>
+</main>
+<script src="demo-app-wasmjs.js"></script>
+<script>
+    const activeDemo = new URLSearchParams(window.location.search).get('demo') || 'simple';
+    const activeLink = document.getElementById(
+        activeDemo === 'simple' ? 'demo-simple-link' : 'demo-live-link'
+    );
+    if (activeLink) {
+        activeLink.classList.add('demo-link-active');
+    }
+</script>
+</body>
+</html>
