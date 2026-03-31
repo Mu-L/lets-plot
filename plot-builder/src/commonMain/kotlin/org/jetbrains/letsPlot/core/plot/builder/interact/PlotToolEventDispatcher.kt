@@ -33,6 +33,7 @@ import org.jetbrains.letsPlot.core.interact.event.ToolEventSpec.INTERACTION_DEAC
 import org.jetbrains.letsPlot.core.interact.event.ToolEventSpec.INTERACTION_UNSUPPORTED
 import org.jetbrains.letsPlot.core.interact.event.ToolEventSpec.ROLLBACK_ALL_CHANGES
 import org.jetbrains.letsPlot.core.interact.event.ToolEventSpec.SELECTION_CHANGED
+import org.jetbrains.letsPlot.core.interact.event.ToolEventSpec.UPDATE_VIEW
 import org.jetbrains.letsPlot.core.interact.feedback.DrawRectFeedback
 import org.jetbrains.letsPlot.core.interact.feedback.DrawRectFeedback.SelectionMode
 import org.jetbrains.letsPlot.core.interact.feedback.PanGeomFeedback
@@ -169,6 +170,7 @@ internal class PlotToolEventDispatcher(
                             EVENT_INTERACTION_TARGET to targetId
                         ).filterNotNullValues()
                     )
+                    fireUpdateView()
                 }
             )
         }
@@ -206,6 +208,13 @@ internal class PlotToolEventDispatcher(
                 EVENT_RESULT_SCALE_FACTOR to scaleFactor,
                 EVENT_INTERACTION_TARGET to targetId,
             ).filterNotNullValues()
+        )
+        fireUpdateView()
+    }
+
+    private fun fireUpdateView() {
+        toolEventCallback.invoke(
+            mapOf(EVENT_NAME to UPDATE_VIEW)
         )
     }
 

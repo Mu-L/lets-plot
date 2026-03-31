@@ -6,6 +6,7 @@
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.dom.createElement
+import org.jetbrains.letsPlot.commons.event.MouseEventPeer
 import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
 import org.jetbrains.letsPlot.commons.geometry.DoubleVector
 import org.jetbrains.letsPlot.commons.geometry.Vector
@@ -81,12 +82,13 @@ internal class FigureToHtml(
                 parentElement = parentElement,
             )
         } else {
-            processPlotFigure(
+            val result = processPlotFigure(
                 svgRoot = svgRoot as PlotSvgRoot,
                 parentElement = parentElement,
 //                eventArea = buildInfo.bounds
                 eventArea = DoubleRectangle(DoubleVector.ZERO, buildInfo.bounds.dimension)
             )
+            result.toolEventDispatcher to result.registration
         }
 
         val domCleanupRegistration = object : Registration() {
@@ -112,11 +114,17 @@ internal class FigureToHtml(
     )
 
     companion object {
+        private data class PlotFigureResult(
+            val toolEventDispatcher: ToolEventDispatcher,
+            val registration: Registration,
+            val mouseEventPeer: MouseEventPeer,
+        )
+
         private fun processPlotFigure(
             svgRoot: PlotSvgRoot,
             parentElement: HTMLElement,
             eventArea: DoubleRectangle
-        ): Pair<ToolEventDispatcher, Registration> {
+        ): PlotFigureResult {
 
             val plotContainer = PlotContainer(svgRoot)
             val (rootSVG, cleanupRegistration) = buildPlotFigureSVG(plotContainer, parentElement, eventArea)
@@ -130,7 +138,7 @@ internal class FigureToHtml(
             }
 
             parentElement.appendChild(rootSVG)
-            return plotContainer.toolEventDispatcher to cleanupRegistration
+            return PlotFigureResult(plotContainer.toolEventDispatcher, cleanupRegistration, plotContainer.mouseEventPeer)
         }
 
         private fun processCompositeFigure(
@@ -158,26 +166,37 @@ internal class FigureToHtml(
 
             // Sub-figures
             val elementToolEventDispatchers = ArrayList<ToolEventDispatcher>()
+            val elementMouseEventPeers = ArrayList<MouseEventPeer>()
             val elementRegistractions = CompositeRegistration()
 
             for (figureSvgRoot in svgRoot.elements) {
                 val elementOrigin = figureSvgRoot.bounds.origin.add(origin)
-                val (toolEventDispatcher, registration) = if (figureSvgRoot is PlotSvgRoot) {
+                if (figureSvgRoot is PlotSvgRoot) {
                     // Create "container" with absolute positioning.
                     val figureContainer = createContainerElement(elementOrigin)
                     parentElement.appendChild(figureContainer)
-                    processPlotFigure(
+                    val result = processPlotFigure(
                         svgRoot = figureSvgRoot,
                         parentElement = figureContainer,
                         eventArea = DoubleRectangle(DoubleVector.ZERO, figureSvgRoot.bounds.dimension)
                     )
+                    elementToolEventDispatchers.add(result.toolEventDispatcher)
+                    elementMouseEventPeers.add(result.mouseEventPeer)
+                    elementRegistractions.add(result.registration)
                 } else {
                     figureSvgRoot as CompositeFigureSvgRoot
-                    processCompositeFigure(figureSvgRoot, elementOrigin, parentElement)
+                    val (toolEventDispatcher, registration) = processCompositeFigure(figureSvgRoot, elementOrigin, parentElement)
+                    elementToolEventDispatchers.add(toolEventDispatcher)
+                    elementRegistractions.add(registration)
                 }
+            }
 
-                elementToolEventDispatchers.add(toolEventDispatcher)
-                elementRegistractions.add(registration)
+            // In a deck layout, forward mouse events from the topmost plot to all siblings.
+            if (svgRoot.isDeck && elementMouseEventPeers.size > 1) {
+                val topmostPeer = elementMouseEventPeers.last()
+                for (peer in elementMouseEventPeers.dropLast(1)) {
+                    peer.addEventSource(topmostPeer)
+                }
             }
 
             return CompositeToolEventDispatcher(elementToolEventDispatchers) to elementRegistractions
