@@ -14,7 +14,7 @@ import org.jetbrains.letsPlot.core.interact.event.ToolEventSpec.EVENT_NAME
 import org.jetbrains.letsPlot.core.interact.event.ToolEventSpec.UPDATE_VIEW
 
 
-class CompositeToolEventDispatcher(
+class CompositeToolEventDispatcher constructor(
     private val elements: List<ToolEventDispatcher>
 ) : ToolEventDispatcher {
 

@@ -8,6 +8,7 @@ package org.jetbrains.letsPlot.awt.plot
 import org.jetbrains.letsPlot.awt.util.AwtEventUtil
 import org.jetbrains.letsPlot.commons.event.MouseEventPeer
 import org.jetbrains.letsPlot.commons.event.MouseEventSpec
+import org.jetbrains.letsPlot.commons.event.TranslatingMouseEventSource
 import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
 import org.jetbrains.letsPlot.commons.geometry.DoubleVector
 import org.jetbrains.letsPlot.commons.registration.Disposable
@@ -129,8 +130,13 @@ internal class FigureToAwt(
         // Note: elements were iterated in reversed order, so index 0 in the list = topmost plot.
         if (svgRoot.isDeck && elementMouseEventPeers.size > 1) {
             val topmostPeer = elementMouseEventPeers.first()
-            for (peer in elementMouseEventPeers.drop(1)) {
-                peer.addEventSource(topmostPeer)
+            val topmostBounds = elementJComponents.first().bounds
+            for (i in 1 until elementMouseEventPeers.size) {
+                val siblingBounds = elementJComponents[i].bounds
+                val dx = topmostBounds.x - siblingBounds.x
+                val dy = topmostBounds.y - siblingBounds.y
+                val translatedSource = TranslatingMouseEventSource(topmostPeer, dx, dy)
+                elementMouseEventPeers[i].addEventSource(translatedSource)
             }
         }
 

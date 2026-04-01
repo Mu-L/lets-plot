@@ -7,6 +7,7 @@ import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.dom.createElement
 import org.jetbrains.letsPlot.commons.event.MouseEventPeer
+import org.jetbrains.letsPlot.commons.event.TranslatingMouseEventSource
 import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
 import org.jetbrains.letsPlot.commons.geometry.DoubleVector
 import org.jetbrains.letsPlot.commons.geometry.Vector
@@ -166,7 +167,7 @@ internal class FigureToHtml(
 
             // Sub-figures
             val elementToolEventDispatchers = ArrayList<ToolEventDispatcher>()
-            val elementMouseEventPeers = ArrayList<MouseEventPeer>()
+            val elementMouseEventPeers = ArrayList<Pair<MouseEventPeer, DoubleVector>>() // peer + origin
             val elementRegistractions = CompositeRegistration()
 
             for (figureSvgRoot in svgRoot.elements) {
@@ -181,7 +182,7 @@ internal class FigureToHtml(
                         eventArea = DoubleRectangle(DoubleVector.ZERO, figureSvgRoot.bounds.dimension)
                     )
                     elementToolEventDispatchers.add(result.toolEventDispatcher)
-                    elementMouseEventPeers.add(result.mouseEventPeer)
+                    elementMouseEventPeers.add(result.mouseEventPeer to figureSvgRoot.bounds.origin)
                     elementRegistractions.add(result.registration)
                 } else {
                     figureSvgRoot as CompositeFigureSvgRoot
@@ -193,9 +194,13 @@ internal class FigureToHtml(
 
             // In a deck layout, forward mouse events from the topmost plot to all siblings.
             if (svgRoot.isDeck && elementMouseEventPeers.size > 1) {
-                val topmostPeer = elementMouseEventPeers.last()
-                for (peer in elementMouseEventPeers.dropLast(1)) {
-                    peer.addEventSource(topmostPeer)
+                val (topmostPeer, topmostOrigin) = elementMouseEventPeers.last()
+                for (i in 0 until elementMouseEventPeers.lastIndex) {
+                    val (siblingPeer, siblingOrigin) = elementMouseEventPeers[i]
+                    val dx = (topmostOrigin.x - siblingOrigin.x).toInt()
+                    val dy = (topmostOrigin.y - siblingOrigin.y).toInt()
+                    val translatedSource = TranslatingMouseEventSource(topmostPeer, dx, dy)
+                    siblingPeer.addEventSource(translatedSource)
                 }
             }
 
