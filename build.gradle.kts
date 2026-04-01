@@ -45,8 +45,8 @@ val letsPlotTaskGroup by extra { "lets-plot" }
 
 allprojects {
     group = "org.jetbrains.lets-plot"
-    version = "4.9.1-SNAPSHOT" // see also: python-package/lets_plot/_version.py
-//    version = "0.0.0-SNAPSHOT"  // for local publishing only
+//    version = "4.9.1-SNAPSHOT" // see also: python-package/lets_plot/_version.py
+    version = "0.0.0-SNAPSHOT"  // for local publishing only
 
     // Generate JVM 1.8 bytecode
     tasks.withType<KotlinJvmCompile>().configureEach {
@@ -463,6 +463,46 @@ subprojects {
                     }
                 }
             }
+        }
+    }
+}
+
+// Step 1: force version and clean stale artifacts. Kept separate so publish tasks
+// can use mustRunAfter on THIS task without creating a cycle with the aggregate below.
+val cleanSnapshotFromMavenLocal by tasks.registering {
+    group = letsPlotTaskGroup
+    description = "Forces version 0.0.0-SNAPSHOT and removes its artifacts from ~/.m2."
+
+    doFirst {
+        // MavenPublication.version defaults to a lazy project.version provider,
+        // so changing it here (before publish tasks execute) is picked up in the POM.
+        allprojects { version = "0.0.0-SNAPSHOT" }
+
+        val snapshotDir = File("${System.getProperty("user.home")}/.m2/repository/org/jetbrains/lets-plot")
+        if (snapshotDir.exists()) {
+            snapshotDir.walkTopDown()
+                .filter { it.isDirectory && it.name == "0.0.0-SNAPSHOT" }
+                .forEach { dir ->
+                    println("Deleting: ${dir.absolutePath}")
+                    dir.deleteRecursively()
+                }
+        }
+    }
+}
+
+// Step 2: aggregate task — cleans first, then publishes all subprojects to ~/.m2.
+val cleanAndPublishSnapshotToMavenLocal by tasks.registering {
+    group = letsPlotTaskGroup
+    description = "Deletes 0.0.0-SNAPSHOT lets-plot artifacts from ~/.m2, then builds and publishes fresh ones."
+    dependsOn(cleanSnapshotFromMavenLocal)
+
+    val cleanTask = cleanSnapshotFromMavenLocal
+    val rootTask = this
+    subprojects {
+        tasks.matching { it.name == "publishToMavenLocal" }.configureEach {
+            rootTask.dependsOn(this)
+            // mustRunAfter the CLEAN task (not rootTask) — avoids the circular dependency
+            mustRunAfter(cleanTask)
         }
     }
 }

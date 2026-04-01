@@ -24,7 +24,8 @@ import kotlin.math.PI
 
 internal class DomContext2d(
     private val ctx: CanvasRenderingContext2D,
-    override val contentScale: Double
+    override val contentScale: Double,
+    private val fontManager: DomFontManager
 ) : Context2d {
 
     init {
@@ -206,7 +207,7 @@ internal class DomContext2d(
     }
 
     override fun setFont(f: Font) {
-        ctx.font = f.toCssString()
+        ctx.font = fontManager.resolveFont(f).toCssString()
     }
 
     override fun setLineWidth(lineWidth: Double) {

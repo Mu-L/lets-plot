@@ -37,7 +37,8 @@ class DomCanvasView(
 
     private val context2d = DomContext2d(
         domCanvasElement.getContext("2d") as CanvasRenderingContext2D,
-        DomCanvas.DEVICE_PIXEL_RATIO
+        DomCanvas.DEVICE_PIXEL_RATIO,
+        DomFontManager.DEFAULT
     )
 
     private val systemTime = SystemTime()
