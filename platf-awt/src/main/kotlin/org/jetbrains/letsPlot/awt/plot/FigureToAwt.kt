@@ -123,7 +123,7 @@ internal class FigureToAwt(
             }
         }
 
-        val toolEventDispatcher = CompositeToolEventDispatcher(elementToolEventDispatchers)
+        val toolEventDispatcher = CompositeToolEventDispatcher(elementToolEventDispatchers, isDeck = svgRoot.isDeck)
         rootJPanel.putClientProperty(ToolEventDispatcher::class, toolEventDispatcher)
 
         // In a deck layout, forward mouse events from the topmost plot to all siblings.

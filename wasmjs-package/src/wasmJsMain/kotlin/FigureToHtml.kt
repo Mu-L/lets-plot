@@ -204,7 +204,7 @@ internal class FigureToHtml(
                 }
             }
 
-            return CompositeToolEventDispatcher(elementToolEventDispatchers) to elementRegistractions
+            return CompositeToolEventDispatcher(elementToolEventDispatchers, isDeck = svgRoot.isDeck) to elementRegistractions
         }
 
         fun setupRootHTMLElement(element: HTMLElement, size: DoubleVector) {
