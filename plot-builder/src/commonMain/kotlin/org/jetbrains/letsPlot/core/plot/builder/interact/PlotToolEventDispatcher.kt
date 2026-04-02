@@ -53,7 +53,14 @@ internal class PlotToolEventDispatcher(
 
     override fun initToolEventCallback(callback: (Map<String, Any>) -> Unit) {
         check(!this::toolEventCallback.isInitialized) { "Repeated initialization of 'toolEventCallback'." }
-        toolEventCallback = callback
+        toolEventCallback = { event ->
+            callback(event)
+            when (event[EVENT_NAME]) {
+                SELECTION_CHANGED, ROLLBACK_ALL_CHANGES -> {
+                    callback(mapOf(EVENT_NAME to UPDATE_VIEW))
+                }
+            }
+        }
     }
 
     override fun activateInteractions(origin: String, interactionSpecList: List<InteractionSpec>) {
@@ -157,7 +164,6 @@ internal class PlotToolEventDispatcher(
                             EVENT_INTERACTION_TARGET to targetId
                         ).filterNotNullValues()
                     )
-                    fireUpdateView()
                 }
             )
         }
@@ -195,13 +201,6 @@ internal class PlotToolEventDispatcher(
                 EVENT_RESULT_SCALE_FACTOR to scaleFactor,
                 EVENT_INTERACTION_TARGET to targetId,
             ).filterNotNullValues()
-        )
-        fireUpdateView()
-    }
-
-    private fun fireUpdateView() {
-        toolEventCallback.invoke(
-            mapOf(EVENT_NAME to UPDATE_VIEW)
         )
     }
 
