@@ -161,30 +161,29 @@ internal class DomContext2d(
     }
     override fun measureText(str: String): org.jetbrains.letsPlot.core.canvas.TextMetrics {
         val metrics = ctx.measureText(str)
-        val ascent = when {
-            metrics.actualBoundingBoxAscent > 0.0 -> metrics.actualBoundingBoxAscent
-            metrics.fontBoundingBoxAscent > 0.0 -> metrics.fontBoundingBoxAscent
-            else -> metrics.emHeightAscent
-        }
-        val descent = when {
-            metrics.actualBoundingBoxDescent > 0.0 -> metrics.actualBoundingBoxDescent
-            metrics.fontBoundingBoxDescent > 0.0 -> metrics.fontBoundingBoxDescent
-            else -> metrics.emHeightDescent
-        }
-        val left = metrics.actualBoundingBoxLeft
-        val right = if (metrics.actualBoundingBoxRight > 0.0) {
-            metrics.actualBoundingBoxRight
-        } else {
-            (metrics.width - left).coerceAtLeast(0.0)
+        fun preferredMetric(actual: Double, fallback: Double): Double {
+            return when {
+                actual.isFinite() && actual >= 0.0 -> actual
+                fallback.isFinite() && fallback >= 0.0 -> fallback
+                else -> 0.0
+            }
         }
 
+        val ascent = preferredMetric(
+            actual = metrics.actualBoundingBoxAscent,
+            fallback = metrics.fontBoundingBoxAscent
+        )
+        val descent = preferredMetric(
+            actual = metrics.actualBoundingBoxDescent,
+            fallback = metrics.fontBoundingBoxDescent
+        )
         return org.jetbrains.letsPlot.core.canvas.TextMetrics(
             ascent = ascent,
             descent = descent,
             bbox = DoubleRectangle.XYWH(
-                -left,
+                0.0,
                 -ascent,
-                left + right,
+                metrics.width,
                 ascent + descent
             )
         )
