@@ -9,10 +9,12 @@ package org.jetbrains.letsPlot.platf.w3c.dom
 
 import kotlinx.browser.document
 import org.jetbrains.letsPlot.commons.registration.Registration
+import org.jetbrains.letsPlot.platf.w3c.jsObject.dynamicFromAnyQ
 import org.w3c.dom.MutationObserver
 import org.w3c.dom.MutationObserverInit
 import org.w3c.dom.Node
 import kotlin.js.ExperimentalWasmJsInterop
+import kotlin.js.unsafeCast
 
 object DomDetachObserver {
     fun onDetach(node: Node, onDetached: () -> Unit): Registration {
@@ -53,12 +55,16 @@ object DomDetachObserver {
         val observer = MutationObserver { _, _ ->
             onMutation()
         }
+
+        @Suppress("RemoveExplicitTypeArguments")  // unsafeCast<MutationObserverInit>() - false positive
         observer.observe(
             document,
-            MutationObserverInit(
-                childList = true,
-                subtree = true
-            )
+            dynamicFromAnyQ(
+                mapOf(
+                    "childList" to true,
+                    "subtree" to true
+                )
+            )!!.unsafeCast<MutationObserverInit>()
         )
         return Registration.onRemove {
             observer.disconnect()
