@@ -39,7 +39,8 @@ import org.jetbrains.letsPlot.core.plot.builder.PlotInteractor
 
 
 internal class PlotToolEventDispatcher(
-    private val plotInteractor: PlotInteractor
+    private val plotInteractor: PlotInteractor,
+    private val internalDebounce: Boolean
 ) : ToolEventDispatcher {
 
     private val interactionsByOrigin: MutableMap<
@@ -146,6 +147,7 @@ internal class PlotToolEventDispatcher(
 
             InteractionSpec.Name.WHEEL_ZOOM -> WheelZoomFeedback(
                 modifiersMatcher = modifiersMatcher,
+                internalDebounce = internalDebounce,
                 onCompleted = { targetId, dataBounds, scaleFactor ->
                     val dataBoundsLTRB = listOf(dataBounds.left, dataBounds.top, dataBounds.right, dataBounds.bottom)
                     val scaleFactorList = listOf(scaleFactor.x, scaleFactor.y)

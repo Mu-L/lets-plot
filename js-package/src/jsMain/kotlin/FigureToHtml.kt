@@ -124,10 +124,11 @@ internal class FigureToHtml(
         private fun processPlotFigure(
             svgRoot: PlotSvgRoot,
             parentElement: HTMLElement,
-            eventArea: DoubleRectangle
+            eventArea: DoubleRectangle,
+            inDeck: Boolean = false,
         ): PlotFigureResult {
 
-            val plotContainer = PlotContainer(svgRoot)
+            val plotContainer = PlotContainer(svgRoot, inDeck = inDeck)
             val (rootSVG, cleanupRegistration) = buildPlotFigureSVG(plotContainer, parentElement, eventArea)
             rootSVG.style.setCursor(CssCursor.CROSSHAIR)
 
@@ -179,7 +180,8 @@ internal class FigureToHtml(
                     val result = processPlotFigure(
                         svgRoot = figureSvgRoot,
                         parentElement = figureContainer,
-                        eventArea = DoubleRectangle(DoubleVector.ZERO, figureSvgRoot.bounds.dimension)
+                        eventArea = DoubleRectangle(DoubleVector.ZERO, figureSvgRoot.bounds.dimension),
+                        inDeck = svgRoot.isDeck
                     )
                     elementToolEventDispatchers.add(result.toolEventDispatcher)
                     elementMouseEventPeers.add(result.mouseEventPeer to figureSvgRoot.bounds.origin)

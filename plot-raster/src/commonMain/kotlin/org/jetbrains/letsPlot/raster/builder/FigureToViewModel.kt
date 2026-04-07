@@ -38,7 +38,7 @@ internal object FigureToViewModel {
 
             val childModel = when (childSvg) {
                 is CompositeFigureSvgRoot -> processCompositeFigure(childSvg)
-                is PlotSvgRoot -> processPlotFigure(childSvg)
+                is PlotSvgRoot -> processPlotFigure(childSvg, inDeck = svgRoot.isDeck)
                 else -> error("Unsupported figure: ${svgRoot::class.simpleName}")
             }
 
@@ -51,8 +51,8 @@ internal object FigureToViewModel {
         return compositeModel
     }
 
-    private fun processPlotFigure(svgRoot: PlotSvgRoot): SinglePlotModel {
-        val plotContainer = PlotContainer(svgRoot)
+    private fun processPlotFigure(svgRoot: PlotSvgRoot, inDeck: Boolean = false): SinglePlotModel {
+        val plotContainer = PlotContainer(svgRoot, inDeck = inDeck)
 
         val plotModel = SinglePlotModel(
             svg = svgRoot.svg,

@@ -109,7 +109,7 @@ internal class FigureToAwt(
         // Thus, reverse elements here to have subplots painted in the order we need.
         for (element in svgRoot.elements.asReversed()) {
             val comp = if (element is PlotSvgRoot) {
-                processPlotFigure(element)
+                processPlotFigure(element, inDeck = svgRoot.isDeck)
             } else {
                 processCompositeFigure(element as CompositeFigureSvgRoot)
             }
@@ -154,8 +154,9 @@ internal class FigureToAwt(
 
     private fun processPlotFigure(
         svgRoot: PlotSvgRoot,
+        inDeck: Boolean = false,
     ): JComponent {
-        val plotContainer = PlotContainer(svgRoot)
+        val plotContainer = PlotContainer(svgRoot, inDeck = inDeck)
         val plotComponent = buildSinglePlotComponent(plotContainer, svgComponentFactory, executor)
 
         return if (svgRoot.isLiveMap) {
