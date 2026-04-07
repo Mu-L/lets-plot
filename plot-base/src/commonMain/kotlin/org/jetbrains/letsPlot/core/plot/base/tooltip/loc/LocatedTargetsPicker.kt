@@ -6,7 +6,6 @@
 package org.jetbrains.letsPlot.core.plot.base.tooltip.loc
 
 import org.jetbrains.letsPlot.commons.geometry.DoubleVector
-import org.jetbrains.letsPlot.commons.geometry.DoubleVector.Companion.ZERO
 import org.jetbrains.letsPlot.commons.intern.math.distance
 import org.jetbrains.letsPlot.core.plot.base.GeomKind.*
 import org.jetbrains.letsPlot.core.plot.base.tooltip.GeomTarget
@@ -15,14 +14,14 @@ import org.jetbrains.letsPlot.core.plot.base.tooltip.HitShape
 import kotlin.math.abs
 
 class LocatedTargetsPicker(
-    val flippedAxis: Boolean,
-    private val myCursorCoord: DoubleVector? = null // TODO: drop null and default, make it required parameter
+    private val flippedAxis: Boolean,
+    private val cursorCoord: DoubleVector
 ) {
-    private val myAllLookupResults = ArrayList<LookupResult>()
+    private val allLookupResults = ArrayList<LookupResult>()
 
     fun addLookupResult(result: LookupResult) {
-        val lookupResult = filterResults(result, myCursorCoord, flippedAxis)
-        myAllLookupResults.add(lookupResult)
+        val lookupResult = filterResults(result, cursorCoord, flippedAxis)
+        allLookupResults.add(lookupResult)
     }
 
     fun chooseBestResult(): List<LookupResult> {
@@ -36,8 +35,8 @@ class LocatedTargetsPicker(
         // TODO: take into account LookupSpace and LookupStrategy, i.e. first check XY target to fall into CUTOFF_DISTANCE
         // then check distance. This will allow to use bar-alike geoms to use their X lookup strategy and to not win
         // every distance checks as the distance between them and the cursor is an order of magnitude smaller than for XY
-        val withDistances = myAllLookupResults
-            .map { lookupResult -> lookupResult to distance(lookupResult, myCursorCoord ?: ZERO) }
+        val withDistances = allLookupResults
+            .map { lookupResult -> lookupResult to distance(lookupResult, cursorCoord) }
             .filter { (lookupResult, distance) ->
                 lookupResult.isCrosshairEnabled || distance <= CUTOFF_DISTANCE
             }
@@ -50,20 +49,14 @@ class LocatedTargetsPicker(
             .map { (lookupResult, _) -> lookupResult }
             .forEach { lookupResult ->
                 picked = when {
-                    picked.isNotEmpty() && lookupResult.geomKind in listOf(TEXT, LABEL) -> {
-                        // TEXT tooltips are considered only when no other tooltips are present.
-                        // Otherwise, TEXT layer is used as decoration, e.g. values of bars, histograms, corrplot,
-                        // and we actually want to see ancestors geom tooltip.
-                        picked
-                    }
+                    // TEXT tooltips are considered only when no other tooltips are present.
+                    // Otherwise, TEXT layer is used as decoration, e.g. values of bars, histograms, corrplot,
+                    // and we actually want to see ancestors geom tooltip.
+                    picked.isNotEmpty() && lookupResult.geomKind in listOf(TEXT, LABEL) -> picked
 
-                    picked.isNotEmpty() && stackableResults(picked[0], lookupResult) -> {
-                        picked + lookupResult
-                    }
+                    picked.isNotEmpty() && stackableResults(picked[0], lookupResult) -> picked + lookupResult
 
-                    else -> {
-                        listOf(lookupResult)
-                    }
+                    else -> listOf(lookupResult)
                 }
             }
 
@@ -162,11 +155,9 @@ class LocatedTargetsPicker(
 
         private fun filterResults(
             lookupResult: LookupResult,
-            coord: DoubleVector?,
+            coord: DoubleVector,
             flippedAxis: Boolean
         ): LookupResult {
-            if (coord == null) return lookupResult
-
             val geomTargets = lookupResult.targets.filter { it.tipLayoutHint.coord != null }
 
             // for bar - if the number of targets exceeds the restriction value => use the closest one

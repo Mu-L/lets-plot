@@ -6,6 +6,7 @@
 package org.jetbrains.letsPlot.core.plot.base.tooltip.loc
 
 import org.assertj.core.api.Assertions.assertThat
+import org.jetbrains.letsPlot.commons.geometry.DoubleVector
 import org.jetbrains.letsPlot.core.plot.base.GeomKind
 import org.jetbrains.letsPlot.core.plot.base.tooltip.ContextualMapping
 import org.jetbrains.letsPlot.core.plot.base.tooltip.GeomTarget
@@ -227,7 +228,7 @@ class LocatedTargetsPickerTest {
     }
 
     private fun assertTargetFrom(vararg expected: LookupResultConfig?, addResults: LocatedTargetsPicker.() -> Unit) {
-        val targetsPicker = LocatedTargetsPicker(flippedAxis = false)
+        val targetsPicker = LocatedTargetsPicker(flippedAxis = false, DoubleVector.ZERO)
         targetsPicker.addResults()
 
         val lookupResults = targetsPicker.chooseBestResult()
@@ -237,9 +238,19 @@ class LocatedTargetsPickerTest {
         } else {
             assertThat<LookupResult>(lookupResults).hasSameSizeAs(expected)
             lookupResults.zip(expected).forEach { pair ->
-                assertThat(pair.first).isEqualTo(pair.second!!.myResult)
+                assertLookupResult(pair.first, pair.second!!)
             }
         }
+    }
+
+    private fun assertLookupResult(actual: LookupResult, expected: LookupResultConfig) {
+        val expectedResult = expected.build()!!
+        assertThat(actual.geomKind).isEqualTo(expectedResult.geomKind)
+        assertThat(actual.distance).isEqualTo(expectedResult.distance)
+        assertThat(actual.hasGeneralTooltip).isEqualTo(expectedResult.hasGeneralTooltip)
+        assertThat(actual.hasAxisTooltip).isEqualTo(expectedResult.hasAxisTooltip)
+        assertThat(actual.isCrosshairEnabled).isEqualTo(expectedResult.isCrosshairEnabled)
+        assertThat(actual.hitShapeKind).isEqualTo(expectedResult.hitShapeKind)
     }
 
     private fun lookupResult(lookupResultConfig: LookupResultConfig?): LookupResult? {
