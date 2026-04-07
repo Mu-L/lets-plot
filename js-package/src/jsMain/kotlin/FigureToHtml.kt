@@ -126,9 +126,10 @@ internal class FigureToHtml(
             parentElement: HTMLElement,
             eventArea: DoubleRectangle,
             inDeck: Boolean = false,
+            isTopmost: Boolean = true,
         ): PlotFigureResult {
 
-            val plotContainer = PlotContainer(svgRoot, inDeck = inDeck)
+            val plotContainer = PlotContainer(svgRoot, inDeck = inDeck, isTopmost = isTopmost)
             val (rootSVG, cleanupRegistration) = buildPlotFigureSVG(plotContainer, parentElement, eventArea)
             rootSVG.style.setCursor(CssCursor.CROSSHAIR)
 
@@ -171,17 +172,19 @@ internal class FigureToHtml(
             val elementMouseEventPeers = ArrayList<Pair<MouseEventPeer, DoubleVector>>() // peer + origin
             val elementRegistractions = CompositeRegistration()
 
-            for (figureSvgRoot in svgRoot.elements) {
+            for ((index, figureSvgRoot) in svgRoot.elements.withIndex()) {
                 val elementOrigin = figureSvgRoot.bounds.origin.add(origin)
                 if (figureSvgRoot is PlotSvgRoot) {
                     // Create "container" with absolute positioning.
                     val figureContainer = createContainerElement(elementOrigin)
                     parentElement.appendChild(figureContainer)
+                    val isTopmost = svgRoot.isDeck && index == svgRoot.elements.lastIndex
                     val result = processPlotFigure(
                         svgRoot = figureSvgRoot,
                         parentElement = figureContainer,
                         eventArea = DoubleRectangle(DoubleVector.ZERO, figureSvgRoot.bounds.dimension),
-                        inDeck = svgRoot.isDeck
+                        inDeck = svgRoot.isDeck,
+                        isTopmost = isTopmost
                     )
                     elementToolEventDispatchers.add(result.toolEventDispatcher)
                     elementMouseEventPeers.add(result.mouseEventPeer to figureSvgRoot.bounds.origin)

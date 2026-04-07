@@ -40,7 +40,8 @@ import org.jetbrains.letsPlot.core.plot.builder.PlotInteractor
 
 internal class PlotToolEventDispatcher(
     private val plotInteractor: PlotInteractor,
-    private val internalDebounce: Boolean
+    private val internalDebounce: Boolean,
+    private val showSelectionFeedback: Boolean
 ) : ToolEventDispatcher {
 
     private val interactionsByOrigin: MutableMap<
@@ -123,6 +124,7 @@ internal class PlotToolEventDispatcher(
                 DrawRectFeedback(
                     centerStart,
                     modifiersMatcher = modifiersMatcher,
+                    showSelectionFeedback = showSelectionFeedback,
                     onCompleted = { targetId, dataBounds, flipped, selectionMode, scaleFactor ->
                         // flip selection mode if the coord flips
                         @Suppress("NAME_SHADOWING")
