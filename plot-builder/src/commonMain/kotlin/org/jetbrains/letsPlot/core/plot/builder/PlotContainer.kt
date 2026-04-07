@@ -17,7 +17,7 @@ import org.jetbrains.letsPlot.datamodel.svg.dom.SvgSvgElement
 class PlotContainer(
     val svgRoot: PlotSvgRoot,
     inDeck: Boolean = false,
-    isTopmost: Boolean = true,
+    isTopmost: Boolean = true,   // only for plots in a deck, ignored otherwise.
 ) : Disposable {
 
     val svg: SvgSvgElement
@@ -53,7 +53,8 @@ class PlotContainer(
             toolEventDispatcher = PlotToolEventDispatcher(
                 plotInteractor,
                 internalDebounce = !inDeck,
-                showSelectionFeedback = isTopmost)
+                showSelectionFeedback = isTopmost
+            )
 
         } else {
             toolEventDispatcher = UnsupportedToolEventDispatcher()

@@ -21,10 +21,10 @@ import org.jetbrains.letsPlot.datamodel.svg.dom.SvgPathElement
 import org.jetbrains.letsPlot.datamodel.svg.dom.SvgRectElement
 import kotlin.math.abs
 
-class DrawRectFeedback(
+class DrawRectFeedback constructor(
     private val centerStart: Boolean,
     private val modifiersMatcher: ModifiersMatcher,
-    private val showSelectionFeedback: Boolean = true,
+    private val showSelectionFeedback: Boolean,
     private val onCompleted: (
         targetId: String?,
         dataBounds: DoubleRectangle,
