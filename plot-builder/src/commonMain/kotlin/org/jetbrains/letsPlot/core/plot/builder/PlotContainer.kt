@@ -53,7 +53,7 @@ class PlotContainer(
             toolEventDispatcher = PlotToolEventDispatcher(
                 plotInteractor,
                 internalDebounce = !inDeck,
-                showSelectionFeedback = isTopmost
+                showSelectionFeedback = !inDeck || isTopmost
             )
 
         } else {
