@@ -19,6 +19,12 @@ val hamcrestVersion = project.extra["hamcrest.version"] as String
 val mockitoVersion = project.extra["mockito.version"] as String
 val assertjVersion = project.extra["assertj.version"] as String
 val slf4jVersion = project.extra["slf4j.version"] as String
+// Performance tests are opt-in: use -PincludePerformanceTests=true with jvmTest/allTests
+// or run :plot-base:jvmPerformanceTest directly.
+val includePerformanceTests = providers.gradleProperty("includePerformanceTests")
+    .map(String::toBoolean)
+    .orElse(false)
+val statPerformanceTestPattern = "org.jetbrains.letsPlot.core.plot.base.StatPerformanceTest*"
 
 kotlin {
     jvm()
@@ -76,3 +82,24 @@ kotlin {
     }
 }
 
+tasks.named<Test>("jvmTest") {
+    if (!includePerformanceTests.get()) {
+        filter {
+            excludeTestsMatching(statPerformanceTestPattern)
+        }
+    }
+}
+
+tasks.register<Test>("jvmPerformanceTest") {
+    group = "verification"
+    description = "Runs JVM performance tests for plot-base."
+
+    val baseJvmTest = tasks.named<Test>("jvmTest").get()
+    testClassesDirs = baseJvmTest.testClassesDirs
+    classpath = baseJvmTest.classpath
+    shouldRunAfter(baseJvmTest)
+
+    filter {
+        includeTestsMatching(statPerformanceTestPattern)
+    }
+}
