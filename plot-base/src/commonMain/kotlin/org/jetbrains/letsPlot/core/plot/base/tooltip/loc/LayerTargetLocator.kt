@@ -108,10 +108,6 @@ internal class LayerTargetLocator(
                 max(0.0, collector.closestPointChecker.distance),
                 geomKind,
                 contextualMapping,
-                contextualMapping.hasGeneralTooltip,
-                contextualMapping.hasAxisTooltip,
-                contextualMapping.isCrosshairEnabled,
-                contextualMapping.tooltipGroup,
                 hitShapeKind
             )
         )

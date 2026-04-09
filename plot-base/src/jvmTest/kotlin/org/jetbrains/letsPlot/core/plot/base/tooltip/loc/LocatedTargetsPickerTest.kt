@@ -9,12 +9,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.letsPlot.commons.geometry.DoubleVector
 import org.jetbrains.letsPlot.core.plot.base.GeomKind
 import org.jetbrains.letsPlot.core.plot.base.tooltip.ContextualMapping
-import org.jetbrains.letsPlot.core.plot.base.tooltip.GeomTarget
 import org.jetbrains.letsPlot.core.plot.base.tooltip.GeomTargetLocator.LookupResult
 import org.jetbrains.letsPlot.core.plot.base.tooltip.HitShape
 import org.jetbrains.letsPlot.core.plot.base.tooltip.loc.LocatedTargetsPicker.Companion.CUTOFF_DISTANCE
 import org.jetbrains.letsPlot.core.plot.base.tooltip.loc.LocatedTargetsPicker.Companion.FAKE_DISTANCE
-import org.mockito.Mockito.mock
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
@@ -261,7 +259,6 @@ class LocatedTargetsPickerTest {
         internal var myResult: LookupResult? = null
         private var myGeomKind: GeomKind? = null
         private var myDistance: Double = 0.toDouble()
-        private val myContextualMapping = mock(ContextualMapping::class.java)
         private var myHasTarget: Boolean = true
         private var myHasGeneralTooltip: Boolean = false
         private var myHasAxisTooltip: Boolean = false
@@ -309,16 +306,23 @@ class LocatedTargetsPickerTest {
                 return null
             }
             if (myResult == null) {
-                myResult = LookupResult(
-                    targets = emptyList<GeomTarget>(),
-                    distance = myDistance,
-                    geomKind = requireNotNull(myGeomKind),
-                    contextualMapping = myContextualMapping,
+                val contextualMapping = ContextualMapping(
+                    tooltipLines = emptyList(),
+                    tooltipAnchor = null,
+                    tooltipMinWidth = null,
+                    ignoreInvisibleTargets = false,
                     hasGeneralTooltip = myHasGeneralTooltip,
                     hasAxisTooltip = myHasAxisTooltip,
                     isCrosshairEnabled = myIsCrosshairEnabled,
-                    hitShapeKind = myHitShapeKind,
-                    tooltipGroup = null
+                    tooltipGroup = null,
+                    tooltipTitle = null
+                )
+                myResult = LookupResult(
+                    targets = emptyList(),
+                    distance = myDistance,
+                    geomKind = requireNotNull(myGeomKind),
+                    contextualMapping = contextualMapping,
+                    hitShapeKind = myHitShapeKind
                 )
             }
             return myResult

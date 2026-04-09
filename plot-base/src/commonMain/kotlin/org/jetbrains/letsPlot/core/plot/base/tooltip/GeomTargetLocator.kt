@@ -37,12 +37,13 @@ interface GeomTargetLocator {
         val distance: Double,
         val geomKind: GeomKind,
         val contextualMapping: ContextualMapping,
-        val hasGeneralTooltip: Boolean,
-        val hasAxisTooltip: Boolean,
-        val isCrosshairEnabled: Boolean,
-        val tooltipGroup: String?,
         val hitShapeKind: HitShape.Kind,
-    )
+    ) {
+        val hasGeneralTooltip: Boolean = contextualMapping.hasGeneralTooltip
+        val hasAxisTooltip: Boolean = contextualMapping.hasAxisTooltip
+        val isCrosshairEnabled: Boolean = contextualMapping.isCrosshairEnabled
+        val tooltipGroup: String? = contextualMapping.tooltipGroup
+    }
 
     object NullGeomTargetLocator : GeomTargetLocator {
         override fun search(coord: DoubleVector): LookupResult? = null
