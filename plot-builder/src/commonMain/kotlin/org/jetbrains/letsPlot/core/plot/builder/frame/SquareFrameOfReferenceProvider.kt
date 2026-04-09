@@ -113,7 +113,8 @@ internal class SquareFrameOfReferenceProvider(
                 axisLayoutQuad,
                 hDomain = hvDomain.xRange(),
                 vDomain = hvDomain.yRange(),
-                marginsLayout
+                marginsLayout,
+                panelInset
             )
         }
     }

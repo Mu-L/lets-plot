@@ -85,6 +85,14 @@ internal class PlotTile constructor(
         geomGroup.add(geomInteractionGroup)
         add(frameOfReference.topGroup)
 
+        if (DEBUG_DRAWING) {
+            drawDebugRect(
+                r = tileLayoutInfo.geomContentBounds,
+                color = Color.GREEN,
+                strokeWidth = 2.0
+            )
+        }
+
         val geomOuterBounds = tileLayoutInfo.geomOuterBounds
 
         addFacetLabels(geomOuterBounds, theme.facets())

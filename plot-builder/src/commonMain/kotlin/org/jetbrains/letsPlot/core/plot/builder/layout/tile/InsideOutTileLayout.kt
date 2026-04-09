@@ -8,6 +8,7 @@ package org.jetbrains.letsPlot.core.plot.builder.layout.tile
 import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
 import org.jetbrains.letsPlot.commons.geometry.DoubleVector
 import org.jetbrains.letsPlot.commons.interval.DoubleSpan
+import org.jetbrains.letsPlot.core.plot.base.layout.Thickness
 import org.jetbrains.letsPlot.core.plot.builder.coord.CoordProvider
 import org.jetbrains.letsPlot.core.plot.builder.layout.*
 import org.jetbrains.letsPlot.core.plot.builder.layout.LayoutConstants.FACET_PANEL_AXIS_EXPAND
@@ -17,6 +18,7 @@ internal class InsideOutTileLayout(
     private val hDomain: DoubleSpan, // transformed data ranges.
     private val vDomain: DoubleSpan,
     private val marginsLayout: GeomMarginsLayout,
+    private val panelInset: Thickness,
 ) : TileLayout {
     override val insideOut: Boolean = true
 
@@ -25,10 +27,11 @@ internal class InsideOutTileLayout(
 
         val geomOuterBounds = DoubleRectangle(DoubleVector.ZERO, geomSize)
         val geomInnerBounds = marginsLayout.toInnerBounds(geomOuterBounds)
+        val geomContentBounds = panelInset.shrinkRect(geomInnerBounds)
 
         var axisInfos = computeAxisInfos(
             axisLayoutQuad,
-            geomSize = geomInnerBounds.dimension,
+            geomSize = geomContentBounds.dimension,
             hDomain, vDomain,
         )
 
@@ -49,7 +52,7 @@ internal class InsideOutTileLayout(
             geomWithAxisBounds = geomWithAxisBounds,
             geomOuterBounds = geomOuterBounds,
             geomInnerBounds = geomInnerBounds,
-            geomContentBounds = geomInnerBounds,
+            geomContentBounds = geomContentBounds,
             axisInfos = axisInfos,
             hAxisShown = true,
             vAxisShown = true,

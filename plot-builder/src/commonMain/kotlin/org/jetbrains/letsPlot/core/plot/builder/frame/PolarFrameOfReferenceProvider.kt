@@ -107,7 +107,8 @@ internal class PolarFrameOfReferenceProvider(
                 axisLayoutQuad,
                 hDomain = adjustedDomain.xRange(),
                 vDomain = adjustedDomain.yRange(),
-                marginsLayout
+                marginsLayout,
+                panelInset
             )
         }
     }
