@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023. JetBrains s.r.o.
+ * Copyright (c) 2026. JetBrains s.r.o.
  * Use of this source code is governed by the MIT license that can be found in the LICENSE file.
  */
 
@@ -33,7 +33,8 @@ object GeomInteractionUtil {
             statKind = statKind,
             isCrosshairEnabled = isCrosshairEnabled(geomKind, tooltipSpecification1),
             isPolarCoordSystem = isPolarCoordSystem,
-            multilayerWithTooltips = multilayerWithTooltips
+            multilayerWithTooltips = multilayerWithTooltips,
+            tooltipGroup = tooltipSpecification1.tooltipGroup
         )
 
         val axisWithoutTooltip = HashSet<Aes<*>>()
@@ -82,7 +83,8 @@ object GeomInteractionUtil {
                 tooltipLinePatterns = null,
                 tooltipProperties = TooltipSpecification.TooltipProperties.NONE,
                 tooltipTitle = null,
-                disableSplitting = false
+                disableSplitting = false,
+                tooltipGroup = null,
             )
         }
 
@@ -97,6 +99,7 @@ object GeomInteractionUtil {
             .tooltipLinesSpec(tooltipSpecification)
             .tooltipConstants(createConstantAesList(geomKind, constantsMap))
             .enableCrosshair(isCrosshairEnabled(geomKind, tooltipSpecification1))
+            .tooltipGroup(tooltipSpecification.tooltipGroup)
     }
 
     private fun createGeomTooltipSetup(
@@ -104,9 +107,10 @@ object GeomInteractionUtil {
         statKind: StatKind,
         isCrosshairEnabled: Boolean,
         isPolarCoordSystem: Boolean,
-        multilayerWithTooltips: Boolean
+        multilayerWithTooltips: Boolean,
+        tooltipGroup: String?,
     ): GeomTooltipSetup {
-        val tooltipSetup = createGeomTooltipSetup(geomKind, statKind, isCrosshairEnabled, isPolarCoordSystem).let {
+        val tooltipSetup = createGeomTooltipSetup(geomKind, statKind, isCrosshairEnabled, isPolarCoordSystem, tooltipGroup).let {
             var multilayerLookup = false
             if (multilayerWithTooltips && !isCrosshairEnabled) {
                 // Only these kinds of geoms should be switched to NEAREST XY strategy on a multilayer plot,
@@ -135,20 +139,18 @@ object GeomInteractionUtil {
         geomKind: GeomKind,
         statKind: StatKind,
         isCrosshairEnabled: Boolean,
-        isPolarCoordSystem: Boolean
+        isPolarCoordSystem: Boolean,
+        tooltipGroup: String?,
     ): GeomTooltipSetup {
         if (isPolarCoordSystem) {
             // Always show axis tooltips for polar coordinate system as all geoms are area-like
-            return GeomTooltipSetup.bivariateFunction(GeomTooltipSetup.AREA_GEOM, axisTooltipVisibilityFromConfig = true)
+            return GeomTooltipSetup.bivariateFunction(GeomTooltipSetup.AREA_GEOM, axisTooltipVisibilityFromConfig = true, tooltipGroup = tooltipGroup)
         }
 
         if (statKind === StatKind.SMOOTH) {
             when (geomKind) {
                 GeomKind.POINT,
-                GeomKind.CONTOUR -> return GeomTooltipSetup.xUnivariateFunction(
-                    GeomTargetLocator.LookupStrategy.NEAREST
-                )
-
+                GeomKind.CONTOUR -> return GeomTooltipSetup.xUnivariateFunction(GeomTargetLocator.LookupStrategy.NEAREST, tooltipGroup = tooltipGroup)
                 else -> {}
             }
         }
@@ -156,7 +158,8 @@ object GeomInteractionUtil {
         when (geomKind) {
             GeomKind.RIBBON -> return GeomTooltipSetup.xUnivariateFunction(
                 GeomTargetLocator.LookupStrategy.NEAREST,
-                axisTooltipVisibilityFromConfig = true
+                axisTooltipVisibilityFromConfig = true,
+                tooltipGroup = tooltipGroup,
             )
             GeomKind.DENSITY,
             GeomKind.FREQPOLY,
@@ -171,13 +174,14 @@ object GeomInteractionUtil {
             GeomKind.LINE_RANGE,
             GeomKind.ERROR_BAR -> return GeomTooltipSetup.xUnivariateFunction(
                 GeomTargetLocator.LookupStrategy.HOVER,
-                axisTooltipVisibilityFromConfig = true
+                axisTooltipVisibilityFromConfig = true,
+                tooltipGroup = tooltipGroup,
             )
 
             GeomKind.SMOOTH -> return if (isCrosshairEnabled) {
-                GeomTooltipSetup.xUnivariateFunction(GeomTargetLocator.LookupStrategy.NEAREST)
+                GeomTooltipSetup.xUnivariateFunction(GeomTargetLocator.LookupStrategy.NEAREST, tooltipGroup)
             } else {
-                GeomTooltipSetup.xUnivariateFunction(GeomTargetLocator.LookupStrategy.HOVER)
+                GeomTooltipSetup.xUnivariateFunction(GeomTargetLocator.LookupStrategy.HOVER, tooltipGroup)
             }
 
             GeomKind.PIE,
@@ -188,7 +192,8 @@ object GeomInteractionUtil {
             GeomKind.BIN_2D,
             GeomKind.TILE -> return GeomTooltipSetup.bivariateFunction(
                 GeomTooltipSetup.AREA_GEOM,
-                axisTooltipVisibilityFromConfig = true
+                axisTooltipVisibilityFromConfig = true,
+                tooltipGroup = tooltipGroup
             )
 
             GeomKind.TEXT,
@@ -207,19 +212,17 @@ object GeomInteractionUtil {
             GeomKind.SINA,
             GeomKind.LOLLIPOP,
             GeomKind.SPOKE,
-            GeomKind.CURVE -> return GeomTooltipSetup.bivariateFunction(GeomTooltipSetup.NON_AREA_GEOM)
+            GeomKind.CURVE -> return GeomTooltipSetup.bivariateFunction(GeomTooltipSetup.NON_AREA_GEOM, tooltipGroup)
 
             GeomKind.Q_Q_LINE,
             GeomKind.Q_Q_2_LINE,
             GeomKind.PATH -> {
                 return when (statKind) {
-                    StatKind.CONTOUR, StatKind.CONTOURF, StatKind.DENSITY2D -> GeomTooltipSetup.bivariateFunction(
-                        GeomTooltipSetup.NON_AREA_GEOM
-                    )
+                    StatKind.CONTOUR,
+                    StatKind.CONTOURF,
+                    StatKind.DENSITY2D -> GeomTooltipSetup.bivariateFunction(GeomTooltipSetup.NON_AREA_GEOM, tooltipGroup)
 
-                    else -> {
-                        GeomTooltipSetup.bivariateFunction(GeomTooltipSetup.AREA_GEOM)
-                    }
+                    else -> GeomTooltipSetup.bivariateFunction(GeomTooltipSetup.AREA_GEOM, tooltipGroup)
                 }
             }
 
@@ -230,9 +233,9 @@ object GeomInteractionUtil {
             GeomKind.CONTOURF,
             GeomKind.POLYGON,
             GeomKind.MAP,
-            GeomKind.RECT -> return GeomTooltipSetup.bivariateFunction(GeomTooltipSetup.AREA_GEOM)
+            GeomKind.RECT -> return GeomTooltipSetup.bivariateFunction(GeomTooltipSetup.AREA_GEOM, tooltipGroup)
 
-            GeomKind.LIVE_MAP -> return GeomTooltipSetup.bivariateFunction(GeomTooltipSetup.NON_AREA_GEOM)
+            GeomKind.LIVE_MAP -> return GeomTooltipSetup.bivariateFunction(GeomTooltipSetup.NON_AREA_GEOM, tooltipGroup)
 
             else -> return GeomTooltipSetup.none()
         }

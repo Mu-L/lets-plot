@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023. JetBrains s.r.o.
+ * Copyright (c) 2026. JetBrains s.r.o.
  * Use of this source code is governed by the MIT license that can be found in the LICENSE file.
  */
 
@@ -31,6 +31,9 @@ class GeomInteractionBuilder constructor(
     var isCrosshairEnabled: Boolean = false
         private set
 
+    var tooltipGroup: String? = null
+        private set
+
     val tooltipLines: List<LinePattern>
         get() = createTooltipLines(
             myUserTooltipSpec,
@@ -45,7 +48,6 @@ class GeomInteractionBuilder constructor(
 
     val tooltipTitle: LinePattern?
         get() = myUserTooltipSpec.tooltipTitle
-
 
     fun tooltipConstants(v: Map<Aes<*>, Any>): GeomInteractionBuilder {
         tooltipConstants = v
@@ -67,6 +69,11 @@ class GeomInteractionBuilder constructor(
         return this
     }
 
+    fun tooltipGroup(v: String?): GeomInteractionBuilder {
+        tooltipGroup = v
+        return this
+    }
+
     fun build(): GeomInteraction {
         return GeomInteraction(this)
     }
@@ -77,11 +84,11 @@ class GeomInteractionBuilder constructor(
         private val axisAes: List<Aes<*>>? = null,
     ) {
         fun xUnivariateFunction(lookupStrategy: LookupStrategy): GeomInteractionBuilder {
-            return createBuilder(GeomTooltipSetup.xUnivariateFunction(lookupStrategy))
+            return createBuilder(GeomTooltipSetup.xUnivariateFunction(lookupStrategy, tooltipGroup = null))
         }
 
         fun bivariateFunction(area: Boolean): GeomInteractionBuilder {
-            return createBuilder(GeomTooltipSetup.bivariateFunction(area))
+            return createBuilder(GeomTooltipSetup.bivariateFunction(area, tooltipGroup = null))
         }
 
         private fun createBuilder(geomTooltipSetup: GeomTooltipSetup): GeomInteractionBuilder {

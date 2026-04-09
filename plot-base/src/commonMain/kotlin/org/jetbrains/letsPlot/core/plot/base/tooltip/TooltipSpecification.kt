@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026. JetBrains s.r.o.
+ * Use of this source code is governed by the MIT license that can be found in the LICENSE file.
+ */
+
 package org.jetbrains.letsPlot.core.plot.base.tooltip
 
 import org.jetbrains.letsPlot.core.plot.base.tooltip.text.LinePattern
@@ -8,7 +13,8 @@ class TooltipSpecification(
     val tooltipLinePatterns: List<LinePattern>?,
     val tooltipProperties: TooltipProperties,
     val tooltipTitle: LinePattern?,
-    val disableSplitting: Boolean
+    val disableSplitting: Boolean,
+    val tooltipGroup: String?,
 ) {
     class TooltipProperties(
         val anchor: TooltipAnchor?,
@@ -32,7 +38,8 @@ class TooltipSpecification(
             tooltipLinePatterns = emptyList(),
             tooltipProperties = TooltipProperties.NONE,
             tooltipTitle = null,
-            disableSplitting = false
+            disableSplitting = false,
+            tooltipGroup = null,
         )
 
         fun defaultTooltip() = TooltipSpecification(
@@ -40,7 +47,8 @@ class TooltipSpecification(
             tooltipLinePatterns = null,
             tooltipProperties = TooltipProperties.NONE,
             tooltipTitle = null,
-            disableSplitting = false
+            disableSplitting = false,
+            tooltipGroup = null,
         )
     }
 }

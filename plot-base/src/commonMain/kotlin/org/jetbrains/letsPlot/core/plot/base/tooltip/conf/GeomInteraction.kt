@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023. JetBrains s.r.o.
+ * Copyright (c) 2026. JetBrains s.r.o.
  * Use of this source code is governed by the MIT license that can be found in the LICENSE file.
  */
 
@@ -18,16 +18,17 @@ import org.jetbrains.letsPlot.core.plot.base.tooltip.text.ValueSource
 class GeomInteraction(builder: GeomInteractionBuilder) :
     ContextualMappingProvider {
 
-    private val myLocatorLookupSpace: LookupSpace = builder.locatorLookupSpace
-    private val myLocatorLookupStrategy: LookupStrategy = builder.locatorLookupStrategy
-    private val myTooltipLines: List<LinePattern> = builder.tooltipLines
-    private val myTooltipProperties: TooltipProperties = builder.tooltipProperties
-    private val myIgnoreInvisibleTargets = builder.ignoreInvisibleTargets
-    private val myIsCrosshairEnabled: Boolean = builder.isCrosshairEnabled
-    private val myTooltipTitle: LinePattern? = builder.tooltipTitle
+    private val locatorLookupSpace: LookupSpace = builder.locatorLookupSpace
+    private val locatorLookupStrategy: LookupStrategy = builder.locatorLookupStrategy
+    private val tooltipLines: List<LinePattern> = builder.tooltipLines
+    private val tooltipProperties: TooltipProperties = builder.tooltipProperties
+    private val ignoreInvisibleTargets = builder.ignoreInvisibleTargets
+    private val isCrosshairEnabled: Boolean = builder.isCrosshairEnabled
+    private val tooltipGroup = builder.tooltipGroup
+    private val tooltipTitle: LinePattern? = builder.tooltipTitle
 
     fun createLookupSpec(): LookupSpec {
-        return LookupSpec(myLocatorLookupSpace, myLocatorLookupStrategy)
+        return LookupSpec(locatorLookupSpace, locatorLookupStrategy)
     }
 
     override fun createContextualMapping(
@@ -35,14 +36,15 @@ class GeomInteraction(builder: GeomInteractionBuilder) :
         dataFrame: DataFrame
     ): ContextualMapping {
         return createContextualMapping(
-            myTooltipLines.map(::LinePattern),  // clone tooltip lines to not share DataContext between plots when facet is used
+            tooltipLines.map(::LinePattern),  // clone tooltip lines to not share DataContext between plots when facet is used
             // (issue #247 - With facet_grid tooltip shows data from last plot on all plots)
             dataAccess,
             dataFrame,
-            myTooltipProperties,
-            myIgnoreInvisibleTargets,
-            myIsCrosshairEnabled,
-            myTooltipTitle?.let(::LinePattern)
+            tooltipProperties,
+            ignoreInvisibleTargets,
+            isCrosshairEnabled,
+            tooltipGroup,
+            tooltipTitle?.let(::LinePattern)
         )
     }
 
@@ -69,6 +71,7 @@ class GeomInteraction(builder: GeomInteractionBuilder) :
                 TooltipProperties.NONE,
                 ignoreInvisibleTargets = false,
                 isCrosshairEnabled = false,
+                tooltipGroup = null,
                 tooltipTitle = null
             )
         }
@@ -80,6 +83,7 @@ class GeomInteraction(builder: GeomInteractionBuilder) :
             tooltipProperties: TooltipProperties,
             ignoreInvisibleTargets: Boolean,
             isCrosshairEnabled: Boolean,
+            tooltipGroup: String?,
             tooltipTitle: LinePattern?
         ): ContextualMapping {
             val mappedTooltipLines = LinePattern.prepareMappedLines(tooltipLines, dataAccess, dataFrame)
@@ -100,6 +104,7 @@ class GeomInteraction(builder: GeomInteractionBuilder) :
                 hasGeneralTooltip,
                 hasAxisTooltip,
                 isCrosshairEnabled,
+                tooltipGroup,
                 tooltipTitle
             )
         }

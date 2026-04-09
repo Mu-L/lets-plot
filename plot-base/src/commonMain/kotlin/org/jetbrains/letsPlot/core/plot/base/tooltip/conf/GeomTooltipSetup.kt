@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023. JetBrains s.r.o.
+ * Copyright (c) 2026. JetBrains s.r.o.
  * Use of this source code is governed by the MIT license that can be found in the LICENSE file.
  */
 
@@ -14,6 +14,7 @@ class GeomTooltipSetup private constructor(
     val axisAesFromFunctionKind: List<Aes<*>>,// = emptyList()
     val axisTooltipVisibilityFromFunctionKind: Boolean, // = false
     val axisTooltipEnabled: Boolean,// = true
+    val tooltipGroup: String?,
 ) {
 
     fun toMultilayerLookupStrategy(): GeomTooltipSetup {
@@ -22,7 +23,8 @@ class GeomTooltipSetup private constructor(
             locatorLookupSpace = GeomTargetLocator.LookupSpace.XY,
             axisAesFromFunctionKind = axisAesFromFunctionKind,
             axisTooltipVisibilityFromFunctionKind = axisTooltipVisibilityFromFunctionKind,
-            axisTooltipEnabled = axisTooltipEnabled
+            axisTooltipEnabled = axisTooltipEnabled,
+            tooltipGroup = tooltipGroup,
         )
     }
 
@@ -31,12 +33,12 @@ class GeomTooltipSetup private constructor(
         const val NON_AREA_GEOM = false
 
         private val AES_X = listOf(Aes.X)
-        private val AES_Y = listOf(Aes.Y)
         private val AES_XY = listOf(Aes.X, Aes.Y)
 
         fun xUnivariateFunction(
             lookupStrategy: GeomTargetLocator.LookupStrategy,
-            axisTooltipVisibilityFromConfig: Boolean? = null
+            tooltipGroup: String?,
+            axisTooltipVisibilityFromConfig: Boolean? = null,
         ): GeomTooltipSetup {
             val axisTooltipVisibilityFromFunctionKind = true
             return GeomTooltipSetup(
@@ -47,29 +49,14 @@ class GeomTooltipSetup private constructor(
                 axisTooltipEnabled = isAxisTooltipEnabled(
                     axisTooltipVisibilityFromConfig,
                     axisTooltipVisibilityFromFunctionKind
-                )
-            )
-        }
-
-        fun yUnivariateFunction(
-            lookupStrategy: GeomTargetLocator.LookupStrategy,
-            axisTooltipVisibilityFromConfig: Boolean? = null
-        ): GeomTooltipSetup {
-            val axisTooltipVisibilityFromFunctionKind = true
-            return GeomTooltipSetup(
-                locatorLookupStrategy = lookupStrategy,
-                locatorLookupSpace = GeomTargetLocator.LookupSpace.Y,
-                axisAesFromFunctionKind = AES_Y,
-                axisTooltipVisibilityFromFunctionKind = axisTooltipVisibilityFromFunctionKind,
-                axisTooltipEnabled = isAxisTooltipEnabled(
-                    axisTooltipVisibilityFromConfig,
-                    axisTooltipVisibilityFromFunctionKind
-                )
+                ),
+                tooltipGroup = tooltipGroup,
             )
         }
 
         fun bivariateFunction(
             area: Boolean,
+            tooltipGroup: String?,
             axisTooltipVisibilityFromConfig: Boolean? = null
         ): GeomTooltipSetup {
             val axisTooltipVisibilityFromFunctionKind = !area
@@ -87,7 +74,8 @@ class GeomTooltipSetup private constructor(
                 axisTooltipEnabled = isAxisTooltipEnabled(
                     axisTooltipVisibilityFromConfig,
                     axisTooltipVisibilityFromFunctionKind
-                )
+                ),
+                tooltipGroup = tooltipGroup,
             )
         }
 
@@ -101,7 +89,8 @@ class GeomTooltipSetup private constructor(
                 axisTooltipEnabled = isAxisTooltipEnabled(
                     axisTooltipVisibilityFromConfig = null,
                     axisTooltipVisibilityFromFunctionKind
-                )
+                ),
+                tooltipGroup = null
             )
         }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023. JetBrains s.r.o.
+ * Copyright (c) 2026. JetBrains s.r.o.
  * Use of this source code is governed by the MIT license that can be found in the LICENSE file.
  */
 
@@ -32,15 +32,16 @@ interface GeomTargetLocator {
     }
 
     // `open` for Mockito test
-    open class LookupResult(
+    data class LookupResult(
         val targets: List<GeomTarget>,
-        open val distance: Double,
-        open val geomKind: GeomKind,
-        open val contextualMapping: ContextualMapping,
+        val distance: Double,
+        val geomKind: GeomKind,
+        val contextualMapping: ContextualMapping,
         val hasGeneralTooltip: Boolean,
         val hasAxisTooltip: Boolean,
         val isCrosshairEnabled: Boolean,
-        val hitShapeKind: HitShape.Kind
+        val tooltipGroup: String?,
+        val hitShapeKind: HitShape.Kind,
     )
 
     object NullGeomTargetLocator : GeomTargetLocator {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023. JetBrains s.r.o.
+ * Copyright (c) 2026. JetBrains s.r.o.
  * Use of this source code is governed by the MIT license that can be found in the LICENSE file.
  */
 
@@ -142,17 +142,6 @@ class LocatedTargetsPicker(
             return lft.geomKind === rgt.geomKind && STACKABLE_GEOMS.contains(rgt.geomKind)
         }
 
-        private fun LookupResult.withTargets(newTargets: List<GeomTarget>) = LookupResult(
-            targets = newTargets,
-            distance = distance,
-            geomKind = geomKind,
-            contextualMapping = contextualMapping,
-            hasGeneralTooltip = hasGeneralTooltip,
-            hasAxisTooltip = hasAxisTooltip,
-            isCrosshairEnabled = isCrosshairEnabled,
-            hitShapeKind = hitShapeKind
-        )
-
         private fun filterResults(
             lookupResult: LookupResult,
             coord: DoubleVector,
@@ -167,7 +156,7 @@ class LocatedTargetsPicker(
                 val closestTarget = geomTargets.minBy { target ->
                     distance(coord, target.tipLayoutHint.coord!!)
                 }
-                return lookupResult.withTargets(listOf(closestTarget))
+                return lookupResult.copy(targets = listOf(closestTarget))
             }
 
             if (lookupResult.geomKind !in setOf(DENSITY, HISTOGRAM, FREQPOLY, LINE, AREA, SEGMENT, SPOKE, RIBBON)) {
@@ -192,7 +181,7 @@ class LocatedTargetsPicker(
                 .filter { target -> xDistanceToCoord(target) == minXDistanceToTarget }
                 .distinctBy(GeomTarget::hitIndex)
 
-            return lookupResult.withTargets(newTargets)
+            return lookupResult.copy(targets = newTargets)
         }
     }
 }

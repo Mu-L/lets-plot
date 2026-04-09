@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. JetBrains s.r.o.
+ * Copyright (c) 2026. JetBrains s.r.o.
  * Use of this source code is governed by the MIT license that can be found in the LICENSE file.
  */
 
@@ -25,21 +25,22 @@ class TooltipConfig(
                 linePatterns,
                 TooltipSpecification.TooltipProperties(
                     anchor = readAnchor(),
-                    minWidth = readMinWidth()
+                    minWidth = getDouble(Option.Layer.Tooltips.TOOLTIP_MIN_WIDTH)
                 ),
                 titleLine,
-                disableSplitting = getBoolean(Option.Layer.DISABLE_SPLITTING, def = false)
+                disableSplitting = getBoolean(Option.Layer.Tooltips.DISABLE_SPLITTING, def = false),
+                tooltipGroup = getString(Option.Layer.Tooltips.TOOLTIP_GROUP)
             )
         }
 
     }
 
     private fun readAnchor(): TooltipAnchor? {
-        if (!has(Option.Layer.TOOLTIP_ANCHOR)) {
+        if (!has(Option.Layer.Tooltips.TOOLTIP_ANCHOR)) {
             return null
         }
 
-        return when (val anchor = getString(Option.Layer.TOOLTIP_ANCHOR)) {
+        return when (val anchor = getString(Option.Layer.Tooltips.TOOLTIP_ANCHOR)) {
             "top_left" -> TooltipAnchor(TooltipAnchor.VerticalAnchor.TOP, TooltipAnchor.HorizontalAnchor.LEFT)
             "top_center" -> TooltipAnchor(TooltipAnchor.VerticalAnchor.TOP, TooltipAnchor.HorizontalAnchor.CENTER)
             "top_right" -> TooltipAnchor(TooltipAnchor.VerticalAnchor.TOP, TooltipAnchor.HorizontalAnchor.RIGHT)
@@ -66,7 +67,7 @@ class TooltipConfig(
             )
 
             else -> throw IllegalArgumentException(
-                "Illegal value $anchor, ${Option.Layer.TOOLTIP_ANCHOR}, expected values are: " +
+                "Illegal value $anchor, ${Option.Layer.Tooltips.TOOLTIP_ANCHOR}, expected values are: " +
                         "'top_left'/'top_center'/'top_right'/" +
                         "'middle_left'/'middle_center'/'middle_right'/" +
                         "'bottom_left'/'bottom_center'/'bottom_right'"
@@ -74,10 +75,4 @@ class TooltipConfig(
         }
     }
 
-    private fun readMinWidth(): Double? {
-        if (has(Option.Layer.TOOLTIP_MIN_WIDTH)) {
-            return getDouble(Option.Layer.TOOLTIP_MIN_WIDTH)
-        }
-        return null
-    }
 }

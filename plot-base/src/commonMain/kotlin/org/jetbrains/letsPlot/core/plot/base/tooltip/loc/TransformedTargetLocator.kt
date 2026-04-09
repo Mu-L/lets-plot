@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019. JetBrains s.r.o.
+ * Copyright (c) 2026. JetBrains s.r.o.
  * Use of this source code is governed by the MIT license that can be found in the LICENSE file.
  */
 
@@ -11,25 +11,17 @@ import org.jetbrains.letsPlot.core.plot.base.tooltip.GeomTarget
 import org.jetbrains.letsPlot.core.plot.base.tooltip.GeomTargetLocator
 import org.jetbrains.letsPlot.core.plot.base.tooltip.TipLayoutHint
 
-abstract class TransformedTargetLocator(private val targetLocator: GeomTargetLocator) :
-    GeomTargetLocator {
+abstract class TransformedTargetLocator(
+    private val targetLocator: GeomTargetLocator
+) : GeomTargetLocator {
 
     override fun search(coord: DoubleVector): GeomTargetLocator.LookupResult? {
         val targetCoord = convertToTargetCoord(coord)
         val result = targetLocator.search(targetCoord) ?: return null
-        return convertLookupResult(result)
-    }
 
-    private fun convertLookupResult(lookupResult: GeomTargetLocator.LookupResult): GeomTargetLocator.LookupResult {
-        return GeomTargetLocator.LookupResult(
-            targets = convertGeomTargets(lookupResult.targets),
-            distance = convertToPlotDistance(lookupResult.distance),
-            geomKind = lookupResult.geomKind,
-            contextualMapping = lookupResult.contextualMapping,
-            hasGeneralTooltip = lookupResult.hasGeneralTooltip,
-            hasAxisTooltip = lookupResult.hasAxisTooltip,
-            isCrosshairEnabled = lookupResult.isCrosshairEnabled,
-            hitShapeKind = lookupResult.hitShapeKind
+        return result.copy(
+            targets = convertGeomTargets(result.targets),
+            distance = convertToPlotDistance(result.distance)
         )
     }
 
