@@ -38,7 +38,7 @@ abstract class TransformedTargetLocator(
     private fun convertTipLayoutHint(hint: TipLayoutHint): TipLayoutHint {
         return TipLayoutHint(
             hint.kind,
-            safeConvertToPlotCoord(hint.coord)!!,
+            safeConvertToPlotCoord(hint.coord),
             convertToPlotDistance(hint.objectRadius),
             hint.stemLength,
             hint.fillColor,
@@ -52,8 +52,8 @@ abstract class TransformedTargetLocator(
         return result
     }
 
-    private fun safeConvertToPlotCoord(coord: DoubleVector?): DoubleVector? {
-        return if (coord == null) null else convertToPlotCoord(coord)
+    private fun safeConvertToPlotCoord(coord: DoubleVector): DoubleVector {
+        return convertToPlotCoord(coord)
     }
 
     protected abstract fun convertToTargetCoord(coord: DoubleVector): DoubleVector

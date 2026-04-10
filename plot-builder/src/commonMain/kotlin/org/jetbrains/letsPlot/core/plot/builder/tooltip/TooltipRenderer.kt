@@ -167,7 +167,7 @@ internal class TooltipRenderer(
         }
         val coords = tooltips
             .filter { tooltip -> tooltip.tooltipSpec.isCrosshairEnabled }
-            .mapNotNull { tooltip -> tooltip.tooltipSpec.layoutHint.coord }
+            .map { tooltip -> tooltip.tooltipSpec.layoutHint.coord }
             .toList()
 
         val crosshairComponents = crosshairStorage.provide(coords.size)

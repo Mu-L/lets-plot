@@ -14,6 +14,7 @@ import org.jetbrains.letsPlot.core.plot.base.tooltip.HitShape
 import org.jetbrains.letsPlot.core.plot.base.tooltip.loc.LocatedTargetsPicker.Companion.CUTOFF_DISTANCE
 import org.jetbrains.letsPlot.core.plot.base.tooltip.loc.LocatedTargetsPicker.Companion.FAKE_DISTANCE
 import kotlin.test.BeforeTest
+import kotlin.test.Ignore
 import kotlin.test.Test
 
 class LocatedTargetsPickerTest {
@@ -90,6 +91,40 @@ class LocatedTargetsPickerTest {
         secondLookupResultConfig!!.distanceToTarget(0.0).geomKind(GeomKind.POINT)
 
         assertTargetFrom(secondLookupResultConfig)
+    }
+
+    @Test
+    fun `tooltipGroup for line and point`() {
+        firstLookupResultConfig.distanceToTarget(0.0).geomKind(GeomKind.LINE).tooltipGroup("sameGroup")
+        secondLookupResultConfig!!.distanceToTarget(0.0).geomKind(GeomKind.POINT).tooltipGroup("sameGroup")
+
+        assertTargetFrom(firstLookupResultConfig, secondLookupResultConfig!!)
+    }
+
+    @Ignore("Not yet supported")
+    @Test
+    fun `tooltipGroup for line and point with distance`() {
+        firstLookupResultConfig.distanceToTarget(0.0).geomKind(GeomKind.LINE).tooltipGroup("sameGroup")
+        secondLookupResultConfig!!.distanceToTarget(5.0).geomKind(GeomKind.POINT).tooltipGroup("sameGroup")
+
+        assertTargetFrom(firstLookupResultConfig, secondLookupResultConfig!!)
+    }
+
+    @Test
+    fun `tooltipGroup for line and smooth`() {
+        firstLookupResultConfig.distanceToTarget(0.0).geomKind(GeomKind.LINE).tooltipGroup("sameGroup")
+        secondLookupResultConfig!!.distanceToTarget(0.0).geomKind(GeomKind.SMOOTH).tooltipGroup("sameGroup")
+
+        assertTargetFrom(firstLookupResultConfig, secondLookupResultConfig!!)
+    }
+
+    @Ignore("Not yet supported")
+    @Test
+    fun `tooltipGroup for line and smooth with distance`() {
+        firstLookupResultConfig.distanceToTarget(0.0).geomKind(GeomKind.LINE).tooltipGroup("sameGroup")
+        secondLookupResultConfig!!.distanceToTarget(5.0).geomKind(GeomKind.SMOOTH).tooltipGroup("sameGroup")
+
+        assertTargetFrom(firstLookupResultConfig, secondLookupResultConfig!!)
     }
 
     @Test
@@ -264,6 +299,7 @@ class LocatedTargetsPickerTest {
         private var myHasAxisTooltip: Boolean = false
         private var myIsCrosshairEnabled: Boolean = false
         private var myHitShapeKind: HitShape.Kind = HitShape.Kind.RECT
+        private var myTooltipGroup: String? = null
 
         fun distanceToTarget(v: Double): LookupResultConfig {
             myDistance = v
@@ -301,6 +337,11 @@ class LocatedTargetsPickerTest {
             return this
         }
 
+        fun tooltipGroup(v: String?): LookupResultConfig {
+            myTooltipGroup = v
+            return this
+        }
+
         fun build(): LookupResult? {
             if (!myHasTarget) {
                 return null
@@ -314,7 +355,7 @@ class LocatedTargetsPickerTest {
                     hasGeneralTooltip = myHasGeneralTooltip,
                     hasAxisTooltip = myHasAxisTooltip,
                     isCrosshairEnabled = myIsCrosshairEnabled,
-                    tooltipGroup = null,
+                    tooltipGroup = myTooltipGroup,
                     tooltipTitle = null
                 )
                 myResult = LookupResult(

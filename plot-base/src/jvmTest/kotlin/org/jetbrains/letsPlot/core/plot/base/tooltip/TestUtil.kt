@@ -155,7 +155,7 @@ object TestUtil {
         return LayerTargetLocator(geomKind, lookupSpec, contextualMapping, targets)
     }
 
-    fun coord(x: Double, y: Double): DoubleVector {
+    fun coord(x: Number, y: Number): DoubleVector {
         return DoubleVector(x, y)
     }
 

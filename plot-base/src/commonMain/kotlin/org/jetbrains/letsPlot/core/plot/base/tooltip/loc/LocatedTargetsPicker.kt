@@ -20,18 +20,33 @@ class LocatedTargetsPicker(
     private val allLookupResults = ArrayList<LookupResult>()
 
     fun addLookupResult(result: LookupResult) {
-        val lookupResult = filterResults(result, cursorCoord, flippedAxis)
+        // for bar - if the number of targets exceeds the restriction value => use the closest one
+        val lookupResult = if (result.geomKind in setOf(BAR, HISTOGRAM) && result.targets.size > BAR_TARGETS_MAX_COUNT
+            || result.targets.size > EXPECTED_TARGETS_MAX_COUNT // perf: when LP is used by vis tools with raw data
+        ) {
+            val closestTarget = result.targets
+                .minBy { target -> cursorCoord.distanceTo(target.tipLayoutHint.coord) }
+
+            result.copy(targets = listOf(closestTarget))
+        } else if (result.geomKind in setOf(DENSITY, HISTOGRAM, FREQPOLY, LINE, AREA, SEGMENT, SPOKE, RIBBON)) {
+            // Get the closest targets and remove duplicates
+            val minXDistanceToTarget = result.targets
+                .map { target -> xDistanceToCoord(target, cursorCoord, flippedAxis) }
+                .minByOrNull(::abs)
+
+            val newTargets = result.targets
+                .filter { target -> xDistanceToCoord(target, cursorCoord, flippedAxis) == minXDistanceToTarget }
+                .distinctBy(GeomTarget::hitIndex)
+
+            result.copy(targets = newTargets)
+        } else {
+            result
+        }
+
         allLookupResults.add(lookupResult)
     }
 
     fun chooseBestResult(): List<LookupResult> {
-        fun hasGeneralTooltip(lookupResult: LookupResult) = lookupResult.hasGeneralTooltip
-        fun hasAxisTooltip(lookupResult: LookupResult): Boolean {
-            return lookupResult.hasAxisTooltip ||
-                    // actually hline/vline have axis info in the general tooltip
-                    lookupResult.geomKind in listOf(V_LINE, H_LINE)
-        }
-
         // TODO: take into account LookupSpace and LookupStrategy, i.e. first check XY target to fall into CUTOFF_DISTANCE
         // then check distance. This will allow to use bar-alike geoms to use their X lookup strategy and to not win
         // every distance checks as the distance between them and the cursor is an order of magnitude smaller than for XY
@@ -63,14 +78,14 @@ class LocatedTargetsPicker(
         val allConsideredResults = withDistances.map { (lookupResult, _) -> lookupResult }
 
         return when {
-            picked.any { hasGeneralTooltip(it) && hasAxisTooltip(it) } -> picked
-            allConsideredResults.none(::hasGeneralTooltip) -> picked
-            allConsideredResults.any { hasGeneralTooltip(it) && hasAxisTooltip(it) } -> {
+            picked.any { it.hasGeneralTooltip && hasAxisTooltip(it) } -> picked
+            allConsideredResults.none { it.hasGeneralTooltip } -> picked
+            allConsideredResults.any { it.hasGeneralTooltip && hasAxisTooltip(it) } -> {
                 listOf(
                     withDistances
                         .sortedByDescending { (_, distance) -> distance }
                         .map { (lookupResult, _) -> lookupResult }
-                        .last { hasGeneralTooltip(it) && hasAxisTooltip(it) }
+                        .last { it.hasGeneralTooltip && hasAxisTooltip(it) }
                 )
             }
 
@@ -81,7 +96,7 @@ class LocatedTargetsPicker(
                         .map { (lookupResult, _) -> lookupResult }
                 ) {
                     listOfNotNull(
-                        lastOrNull(::hasGeneralTooltip),
+                        lastOrNull { it.hasGeneralTooltip },
                         lastOrNull(::hasAxisTooltip)
                     )
                 }
@@ -94,7 +109,6 @@ class LocatedTargetsPicker(
         internal const val FAKE_DISTANCE = 15.0
 
         private const val BAR_TARGETS_MAX_COUNT = 5 // allowed number of visible tooltips
-        private val BAR_GEOMS = setOf(BAR, HISTOGRAM)
 
         // more than 10 targets per layer is too much.
         // Seems like Lets-Plot was used by vis tools, not by humans. Limit tooltips count to 1.
@@ -121,67 +135,40 @@ class LocatedTargetsPicker(
         private fun distance(lookupResult: LookupResult, coord: DoubleVector): Double {
             // Special case for geoms like histogram, when mouse inside a rect or only X projection is used (so a distance
             // between cursor is zero). Fake the distance to give a chance for tooltips from other layers.
-            return if (lookupResult.distance == 0.0) {
-                when {
-                    lookupResult.isCrosshairEnabled -> {
-                        // use XY distance for tooltips with crosshair to avoid giving them priority
-                        lookupResult.targets
-                            .filter { it.tipLayoutHint.coord != null }
-                            .minOfOrNull { target -> distance(coord, target.tipLayoutHint.coord!!) }
-                            ?: FAKE_DISTANCE
-                    }
-                    lookupResult.hitShapeKind == HitShape.Kind.POINT -> 0.0 // Points are small; on hovering over them, we don't want to give priority to other tooltips by faking distance.
-                    else -> FAKE_DISTANCE // fake distance to give a chance for tooltips from other layers
+            return when {
+                lookupResult.distance != 0.0 -> lookupResult.distance
+                lookupResult.isCrosshairEnabled -> {
+                    // use XY distance for tooltips with crosshair to avoid giving them priority
+                    lookupResult.targets
+                        .minOfOrNull { target -> distance(coord, target.tipLayoutHint.coord) }
+                        ?: FAKE_DISTANCE
                 }
-            } else {
-                lookupResult.distance
+
+                lookupResult.hitShapeKind == HitShape.Kind.POINT -> 0.0 // Points are small; on hovering over them, we don't want to give priority to other tooltips by faking distance.
+                else -> FAKE_DISTANCE // fake distance to give a chance for tooltips from other layers
             }
         }
 
         private fun stackableResults(lft: LookupResult, rgt: LookupResult): Boolean {
+            if (lft.tooltipGroup != null && lft.tooltipGroup == rgt.tooltipGroup) {
+                return true
+            }
+
             return lft.geomKind === rgt.geomKind && STACKABLE_GEOMS.contains(rgt.geomKind)
         }
 
-        private fun filterResults(
-            lookupResult: LookupResult,
-            coord: DoubleVector,
-            flippedAxis: Boolean
-        ): LookupResult {
-            val geomTargets = lookupResult.targets.filter { it.tipLayoutHint.coord != null }
+        fun hasAxisTooltip(lookupResult: LookupResult): Boolean {
+            return lookupResult.hasAxisTooltip ||
+                    // actually hline/vline have axis info in the general tooltip
+                    lookupResult.geomKind in listOf(V_LINE, H_LINE)
+        }
 
-            // for bar - if the number of targets exceeds the restriction value => use the closest one
-            if (lookupResult.geomKind in BAR_GEOMS && geomTargets.size > BAR_TARGETS_MAX_COUNT
-                || geomTargets.size > EXPECTED_TARGETS_MAX_COUNT // perf: when LP is used by vis tools with raw data
-            ) {
-                val closestTarget = geomTargets.minBy { target ->
-                    distance(coord, target.tipLayoutHint.coord!!)
-                }
-                return lookupResult.copy(targets = listOf(closestTarget))
+        fun xDistanceToCoord(target: GeomTarget, coord: DoubleVector, flippedAxis: Boolean): Double {
+            val distance = target.tipLayoutHint.coord.subtract(coord)
+            return when (flippedAxis) {
+                true -> distance.y
+                false -> distance.x
             }
-
-            if (lookupResult.geomKind !in setOf(DENSITY, HISTOGRAM, FREQPOLY, LINE, AREA, SEGMENT, SPOKE, RIBBON)) {
-                return lookupResult
-            }
-
-            fun xDistanceToCoord(target: GeomTarget): Double {
-                val distance = target.tipLayoutHint.coord!!.subtract(coord)
-                return when (flippedAxis) {
-                    true -> distance.y
-                    false -> distance.x
-                }
-            }
-
-            // Get the closest targets and remove duplicates
-
-            val minXDistanceToTarget = geomTargets
-                .map(::xDistanceToCoord)
-                .minByOrNull(::abs)
-
-            val newTargets = geomTargets
-                .filter { target -> xDistanceToCoord(target) == minXDistanceToTarget }
-                .distinctBy(GeomTarget::hitIndex)
-
-            return lookupResult.copy(targets = newTargets)
         }
     }
 }
