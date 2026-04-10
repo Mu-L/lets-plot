@@ -9,7 +9,7 @@ import org.jetbrains.letsPlot.core.plot.base.Aes
 import org.jetbrains.letsPlot.core.plot.base.DataFrame
 import org.jetbrains.letsPlot.core.plot.base.tooltip.ContextualMapping
 import org.jetbrains.letsPlot.core.plot.base.tooltip.ContextualMappingProvider
-import org.jetbrains.letsPlot.core.plot.base.tooltip.GeomTargetLocator.*
+import org.jetbrains.letsPlot.core.plot.base.tooltip.GeomTargetLocator.LookupSpec
 import org.jetbrains.letsPlot.core.plot.base.tooltip.TooltipSpecification.TooltipProperties
 import org.jetbrains.letsPlot.core.plot.base.tooltip.text.LinePattern
 import org.jetbrains.letsPlot.core.plot.base.tooltip.text.MappedDataAccess
@@ -18,17 +18,12 @@ import org.jetbrains.letsPlot.core.plot.base.tooltip.text.ValueSource
 class GeomInteraction(builder: GeomInteractionBuilder) :
     ContextualMappingProvider {
 
-    private val locatorLookupSpace: LookupSpace = builder.locatorLookupSpace
-    private val locatorLookupStrategy: LookupStrategy = builder.locatorLookupStrategy
+    private val tooltipBehavior: TooltipBehavior = builder.tooltipBehavior
     private val tooltipLines: List<LinePattern> = builder.tooltipLines
-    private val tooltipProperties: TooltipProperties = builder.tooltipProperties
-    private val ignoreInvisibleTargets = builder.ignoreInvisibleTargets
-    private val isCrosshairEnabled: Boolean = builder.isCrosshairEnabled
-    private val tooltipGroup = builder.tooltipGroup
     private val tooltipTitle: LinePattern? = builder.tooltipTitle
 
     fun createLookupSpec(): LookupSpec {
-        return LookupSpec(locatorLookupSpace, locatorLookupStrategy)
+        return tooltipBehavior.lookupSpec
     }
 
     override fun createContextualMapping(
@@ -40,10 +35,10 @@ class GeomInteraction(builder: GeomInteractionBuilder) :
             // (issue #247 - With facet_grid tooltip shows data from last plot on all plots)
             dataAccess,
             dataFrame,
-            tooltipProperties,
-            ignoreInvisibleTargets,
-            isCrosshairEnabled,
-            tooltipGroup,
+            tooltipBehavior.tooltipSpec.tooltipProperties,
+            tooltipBehavior.ignoreInvisibleTargets,
+            tooltipBehavior.isCrosshairEnabled,
+            tooltipBehavior.tooltipSpec.tooltipGroup,
             tooltipTitle?.let(::LinePattern)
         )
     }
