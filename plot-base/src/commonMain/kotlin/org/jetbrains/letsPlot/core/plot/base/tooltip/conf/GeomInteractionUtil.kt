@@ -28,10 +28,14 @@ object GeomInteractionUtil {
         renderedAes: List<Aes<*>>,
         getOriginalVariableName: (Aes<*>) -> String?,
     ): GeomInteractionBuilder {
+        val tooltipSpecificationWithDefaultGroup = tooltipSpecification1.withTooltipGroup(
+            tooltipSpecification1.tooltipGroup ?: defaultTooltipGroup(geomKind)
+        )
+
         val tooltipBehavior = createTooltipBehavior(
             geomKind = geomKind,
             statKind = statKind,
-            tooltipSpecification = tooltipSpecification1,
+            tooltipSpecification = tooltipSpecificationWithDefaultGroup,
             isPolarCoordSystem = isPolarCoordSystem,
             multilayerWithTooltips = multilayerWithTooltips,
         )
@@ -49,7 +53,7 @@ object GeomInteractionUtil {
         val hiddenAesList = createHiddenAesList(
             axisAesFromFunctionKind,
             geomKind,
-            tooltipSpecification1,
+            tooltipSpecificationWithDefaultGroup,
             renderedAes
         )
             .afterOrientation(isYOrientation) + axisWithoutTooltip
@@ -72,18 +76,18 @@ object GeomInteractionUtil {
                 getOriginalVariableName
             )
             sideTooltipAes = createSideTooltipAesList(geomKind, isYOrientation)
-            tooltipSpecification = tooltipSpecification1
+            tooltipSpecification = tooltipSpecificationWithDefaultGroup
         } else {
             tooltipAes = emptyList()
             sideTooltipAes = emptyList()
             // Need to keep specified formats to use for non-hidden tooltips:
             tooltipSpecification = TooltipSpecification(
-                valueSources = tooltipSpecification1.valueSources,
+                valueSources = tooltipSpecificationWithDefaultGroup.valueSources,
                 tooltipLinePatterns = null,
                 tooltipProperties = TooltipSpecification.TooltipProperties.NONE,
                 tooltipTitle = null,
                 disableSplitting = false,
-                tooltipGroup = null,
+                tooltipGroup = tooltipSpecificationWithDefaultGroup.tooltipGroup,
             )
         }
 
@@ -94,6 +98,13 @@ object GeomInteractionUtil {
             sideTooltipAes = sideTooltipAes
         )
         return builder.tooltipConstants(createConstantAesList(geomKind, constantsMap))
+    }
+
+    private fun defaultTooltipGroup(geomKind: GeomKind): String {
+        return when (geomKind) {
+            in LINE_LIKE_GEOMS -> AUTO_TOOLTIP_GROUP_LINE_LIKE
+            else -> "$AUTO_TOOLTIP_GROUP_GEOM_PREFIX${geomKind.name.lowercase()}"
+        }
     }
 
     private fun createTooltipBehavior(
@@ -508,6 +519,21 @@ object GeomInteractionUtil {
             else -> false
         }
     }
+
+    private val LINE_LIKE_GEOMS = setOf(
+        GeomKind.LINE,
+        GeomKind.AREA,
+        GeomKind.SMOOTH,
+        GeomKind.STEP,
+        GeomKind.DENSITY,
+        GeomKind.FREQPOLY,
+        GeomKind.RIBBON,
+        GeomKind.SEGMENT,
+        GeomKind.SPOKE
+    )
+
+    private const val AUTO_TOOLTIP_GROUP_LINE_LIKE = "__auto_group_line_like__"
+    private const val AUTO_TOOLTIP_GROUP_GEOM_PREFIX = "__auto_group_geom__:"
 
     // Add a discrete variable to the tooltip only if the number of factor levels > 4
     private const val MIN_FACTORS_TO_SHOW_TOOLTIPS = 5

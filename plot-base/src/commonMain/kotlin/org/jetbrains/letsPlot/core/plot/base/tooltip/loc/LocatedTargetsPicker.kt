@@ -125,23 +125,6 @@ class LocatedTargetsPicker(
         // User won't get much info from it anyway.
         private const val EXPECTED_TARGETS_MAX_COUNT = 10
 
-        // Consider layers with the same geom as a single layer to join their tooltips
-        private val STACKABLE_GEOMS = setOf(
-            DENSITY,
-            FREQPOLY,
-            BOX_PLOT,
-            HISTOGRAM,
-            LINE,
-            AREA,
-            BAR,
-            ERROR_BAR,
-            CROSS_BAR,
-            LINE_RANGE,
-            POINT_RANGE,
-            SMOOTH,
-            STEP
-        )
-
         private fun distance(lookupResult: LookupResult, coord: DoubleVector): Double {
             // Special case for geoms like histogram, when mouse inside a rect or only X projection is used (so a distance
             // between cursor is zero). Fake the distance to give a chance for tooltips from other layers.
@@ -160,11 +143,7 @@ class LocatedTargetsPicker(
         }
 
         private fun stackableResults(lft: LookupResult, rgt: LookupResult): Boolean {
-            if (lft.tooltipGroup != null && lft.tooltipGroup == rgt.tooltipGroup) {
-                return true
-            }
-
-            return lft.geomKind === rgt.geomKind && STACKABLE_GEOMS.contains(rgt.geomKind)
+            return lft.tooltipGroup != null && lft.tooltipGroup == rgt.tooltipGroup
         }
 
         fun hasAxisTooltip(lookupResult: LookupResult): Boolean {

@@ -68,6 +68,35 @@ class TooltipConfigTest {
     }
 
     @Test
+    fun `default tooltip groups should stack line-like geoms and separate others`() {
+        val lineLayer = buildGeomLayer(
+            geom = "line",
+            data = data,
+            mapping = mapping,
+            tooltips = null
+        )
+        val areaLayer = buildGeomLayer(
+            geom = "area",
+            data = data,
+            mapping = mapping,
+            tooltips = null
+        )
+        val pointLayer = buildGeomLayer(
+            geom = "point",
+            data = data,
+            mapping = mapping,
+            tooltips = null
+        )
+
+        val lineGroup = lineLayer.createContextualMapping()!!.tooltipGroup
+        val areaGroup = areaLayer.createContextualMapping()!!.tooltipGroup
+        val pointGroup = pointLayer.createContextualMapping()!!.tooltipGroup
+
+        assertEquals(lineGroup, areaGroup)
+        assertTrue(lineGroup != pointGroup)
+    }
+
+    @Test
     fun hideTooltips() {
         val geomLayer = buildPointLayer(data, mapping, tooltips = "none")
 

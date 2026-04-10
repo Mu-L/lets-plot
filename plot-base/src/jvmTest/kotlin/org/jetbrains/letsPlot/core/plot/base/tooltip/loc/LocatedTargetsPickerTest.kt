@@ -85,11 +85,11 @@ class LocatedTargetsPickerTest {
     }
 
     @Test
-    fun whenBothTargetsHaveZeroDistance_AndHaveSameGeomKind_ButWithTwoVars_ShouldSelectSecond() {
+    fun whenBothTargetsHaveZeroDistance_AndHaveSameGeomKind_ButWithTwoVars_ShouldSelectBoth() {
         firstLookupResultConfig.distanceToTarget(0.0).geomKind(GeomKind.POINT)
         secondLookupResultConfig!!.distanceToTarget(0.0).geomKind(GeomKind.POINT)
 
-        assertTargetFrom(secondLookupResultConfig)
+        assertTargetFrom(firstLookupResultConfig, secondLookupResultConfig!!)
     }
 
     @Test
@@ -352,7 +352,7 @@ class LocatedTargetsPickerTest {
                     hasGeneralTooltip = myHasGeneralTooltip,
                     hasAxisTooltip = myHasAxisTooltip,
                     isCrosshairEnabled = myIsCrosshairEnabled,
-                    tooltipGroup = myTooltipGroup,
+                    tooltipGroup = myTooltipGroup ?: defaultTooltipGroup(requireNotNull(myGeomKind)),
                     tooltipTitle = null
                 )
                 myResult = LookupResult(
@@ -364,6 +364,27 @@ class LocatedTargetsPickerTest {
                 )
             }
             return myResult
+        }
+
+        private fun defaultTooltipGroup(geomKind: GeomKind): String {
+            return when (geomKind) {
+                in LINE_LIKE_GEOMS -> "line-like"
+                else -> "geom:${geomKind.name.lowercase()}"
+            }
+        }
+
+        companion object {
+            private val LINE_LIKE_GEOMS = setOf(
+                GeomKind.LINE,
+                GeomKind.AREA,
+                GeomKind.SMOOTH,
+                GeomKind.STEP,
+                GeomKind.DENSITY,
+                GeomKind.FREQPOLY,
+                GeomKind.RIBBON,
+                GeomKind.SEGMENT,
+                GeomKind.SPOKE
+            )
         }
     }
 }

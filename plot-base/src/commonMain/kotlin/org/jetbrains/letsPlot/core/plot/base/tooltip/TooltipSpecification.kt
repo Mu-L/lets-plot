@@ -32,6 +32,17 @@ class TooltipSpecification(
 
     fun hideTooltips() = tooltipLinePatterns?.isEmpty() ?: false
 
+    fun withTooltipGroup(tooltipGroup: String?): TooltipSpecification {
+        return TooltipSpecification(
+            valueSources = valueSources,
+            tooltipLinePatterns = tooltipLinePatterns,
+            tooltipProperties = tooltipProperties,
+            tooltipTitle = tooltipTitle,
+            disableSplitting = disableSplitting,
+            tooltipGroup = tooltipGroup
+        )
+    }
+
     companion object {
         val NONE = TooltipSpecification(
             valueSources = emptyList(),
