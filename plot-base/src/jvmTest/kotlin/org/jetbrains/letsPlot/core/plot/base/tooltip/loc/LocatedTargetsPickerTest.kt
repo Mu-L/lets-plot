@@ -14,7 +14,6 @@ import org.jetbrains.letsPlot.core.plot.base.tooltip.HitShape
 import org.jetbrains.letsPlot.core.plot.base.tooltip.loc.LocatedTargetsPicker.Companion.CUTOFF_DISTANCE
 import org.jetbrains.letsPlot.core.plot.base.tooltip.loc.LocatedTargetsPicker.Companion.FAKE_DISTANCE
 import kotlin.test.BeforeTest
-import kotlin.test.Ignore
 import kotlin.test.Test
 
 class LocatedTargetsPickerTest {
@@ -101,7 +100,6 @@ class LocatedTargetsPickerTest {
         assertTargetFrom(firstLookupResultConfig, secondLookupResultConfig!!)
     }
 
-    @Ignore("Not yet supported")
     @Test
     fun `tooltipGroup for line and point with distance`() {
         firstLookupResultConfig.distanceToTarget(0.0).geomKind(GeomKind.LINE).tooltipGroup("sameGroup")
@@ -118,7 +116,6 @@ class LocatedTargetsPickerTest {
         assertTargetFrom(firstLookupResultConfig, secondLookupResultConfig!!)
     }
 
-    @Ignore("Not yet supported")
     @Test
     fun `tooltipGroup for line and smooth with distance`() {
         firstLookupResultConfig.distanceToTarget(0.0).geomKind(GeomKind.LINE).tooltipGroup("sameGroup")

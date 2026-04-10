@@ -58,18 +58,18 @@ class LocatedTargetsPicker(
 
         val minDistance = withDistances.minByOrNull { (_, distance) -> distance }?.second ?: 0.0
 
-        var picked = listOf<LookupResult>()
+        var candidates = listOf<LookupResult>()
         withDistances
             .filter { (_, distance) -> distance == minDistance }
             .map { (lookupResult, _) -> lookupResult }
             .forEach { lookupResult ->
-                picked = when {
+                candidates = when {
                     // TEXT tooltips are considered only when no other tooltips are present.
                     // Otherwise, TEXT layer is used as decoration, e.g. values of bars, histograms, corrplot,
                     // and we actually want to see ancestors geom tooltip.
-                    picked.isNotEmpty() && lookupResult.geomKind in listOf(TEXT, LABEL) -> picked
+                    candidates.isNotEmpty() && lookupResult.geomKind in listOf(TEXT, LABEL) -> candidates
 
-                    picked.isNotEmpty() && stackableResults(picked[0], lookupResult) -> picked + lookupResult
+                    candidates.isNotEmpty() && stackableResults(candidates[0], lookupResult) -> candidates + lookupResult
 
                     else -> listOf(lookupResult)
                 }
@@ -77,9 +77,9 @@ class LocatedTargetsPicker(
 
         val allConsideredResults = withDistances.map { (lookupResult, _) -> lookupResult }
 
-        return when {
-            picked.any { it.hasGeneralTooltip && hasAxisTooltip(it) } -> picked
-            allConsideredResults.none { it.hasGeneralTooltip } -> picked
+        val picked = when {
+            candidates.any { it.hasGeneralTooltip && hasAxisTooltip(it) } -> candidates
+            allConsideredResults.none { it.hasGeneralTooltip } -> candidates
             allConsideredResults.any { it.hasGeneralTooltip && hasAxisTooltip(it) } -> {
                 listOf(
                     withDistances
@@ -101,6 +101,16 @@ class LocatedTargetsPicker(
                     )
                 }
             }
+        }
+
+        return expandWithGroupTooltips(picked)
+    }
+
+    private fun expandWithGroupTooltips(picked: List<LookupResult>): List<LookupResult> {
+        val groupIds = picked.mapNotNull { it.tooltipGroup }.toSet()
+
+        return allLookupResults.filter { result ->
+            result in picked || result.tooltipGroup in groupIds
         }
     }
 
