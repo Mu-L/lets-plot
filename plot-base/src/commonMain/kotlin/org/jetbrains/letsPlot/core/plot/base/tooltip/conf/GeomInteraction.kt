@@ -10,7 +10,7 @@ import org.jetbrains.letsPlot.core.plot.base.DataFrame
 import org.jetbrains.letsPlot.core.plot.base.tooltip.ContextualMapping
 import org.jetbrains.letsPlot.core.plot.base.tooltip.ContextualMappingProvider
 import org.jetbrains.letsPlot.core.plot.base.tooltip.GeomTargetLocator.LookupSpec
-import org.jetbrains.letsPlot.core.plot.base.tooltip.TooltipSpecification.TooltipProperties
+import org.jetbrains.letsPlot.core.plot.base.tooltip.TooltipAnchor
 import org.jetbrains.letsPlot.core.plot.base.tooltip.text.LinePattern
 import org.jetbrains.letsPlot.core.plot.base.tooltip.text.MappedDataAccess
 import org.jetbrains.letsPlot.core.plot.base.tooltip.text.ValueSource
@@ -35,7 +35,8 @@ class GeomInteraction(builder: GeomInteractionBuilder) :
             // (issue #247 - With facet_grid tooltip shows data from last plot on all plots)
             dataAccess,
             dataFrame,
-            tooltipBehavior.tooltipSpec.tooltipProperties,
+            tooltipBehavior.tooltipSpec.anchor,
+            tooltipBehavior.tooltipSpec.minWidth,
             tooltipBehavior.ignoreInvisibleTargets,
             tooltipBehavior.isCrosshairEnabled,
             tooltipBehavior.tooltipSpec.tooltipGroup,
@@ -63,7 +64,8 @@ class GeomInteraction(builder: GeomInteractionBuilder) :
                 defaultTooltipLines,
                 dataAccess,
                 dataFrame,
-                TooltipProperties.NONE,
+                anchor = null,
+                minWidth = null,
                 ignoreInvisibleTargets = false,
                 isCrosshairEnabled = false,
                 tooltipGroup = null,
@@ -75,7 +77,8 @@ class GeomInteraction(builder: GeomInteractionBuilder) :
             tooltipLines: List<LinePattern>,
             dataAccess: MappedDataAccess,
             dataFrame: DataFrame,
-            tooltipProperties: TooltipProperties,
+            anchor: TooltipAnchor?,
+            minWidth: Double?,
             ignoreInvisibleTargets: Boolean,
             isCrosshairEnabled: Boolean,
             tooltipGroup: String?,
@@ -93,8 +96,8 @@ class GeomInteraction(builder: GeomInteractionBuilder) :
 
             return ContextualMapping(
                 mappedTooltipLines,
-                tooltipProperties.anchor,
-                tooltipProperties.minWidth,
+                anchor,
+                minWidth,
                 ignoreInvisibleTargets,
                 hasGeneralTooltip,
                 hasAxisTooltip,

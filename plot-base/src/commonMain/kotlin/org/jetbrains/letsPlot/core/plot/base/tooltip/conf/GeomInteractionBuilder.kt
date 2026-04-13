@@ -30,9 +30,6 @@ class GeomInteractionBuilder constructor(
             tooltipConstantAes = tooltipConstants
         )
 
-    val tooltipProperties
-        get() = tooltipBehavior.tooltipSpec.tooltipProperties
-
     val tooltipTitle: LinePattern?
         get() = tooltipBehavior.tooltipSpec.tooltipTitle
 

@@ -23,10 +23,8 @@ class TooltipConfig(
             TooltipSpecification(
                 valueSources,
                 linePatterns,
-                TooltipSpecification.TooltipProperties(
-                    anchor = readAnchor(),
-                    minWidth = getDouble(Option.Layer.Tooltips.TOOLTIP_MIN_WIDTH)
-                ),
+                anchor = readAnchor(),
+                minWidth = getDouble(Option.Layer.Tooltips.TOOLTIP_MIN_WIDTH),
                 titleLine,
                 disableSplitting = getBoolean(Option.Layer.Tooltips.DISABLE_SPLITTING, def = false),
                 tooltipGroup = getString(Option.Layer.Tooltips.TOOLTIP_GROUP)

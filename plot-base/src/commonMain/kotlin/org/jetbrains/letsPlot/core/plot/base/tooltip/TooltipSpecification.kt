@@ -11,23 +11,12 @@ import org.jetbrains.letsPlot.core.plot.base.tooltip.text.ValueSource
 class TooltipSpecification(
     val valueSources: List<ValueSource>,
     val tooltipLinePatterns: List<LinePattern>?,
-    val tooltipProperties: TooltipProperties,
+    val anchor: TooltipAnchor?,
+    val minWidth: Double?,
     val tooltipTitle: LinePattern?,
     val disableSplitting: Boolean,
     val tooltipGroup: String?,
 ) {
-    class TooltipProperties(
-        val anchor: TooltipAnchor?,
-        val minWidth: Double?
-    ) {
-        companion object {
-            val NONE = TooltipProperties(
-                anchor = null,
-                minWidth = null
-            )
-        }
-    }
-
     fun useDefaultTooltips() = tooltipLinePatterns == null
 
     fun hideTooltips() = tooltipLinePatterns?.isEmpty() ?: false
@@ -36,7 +25,8 @@ class TooltipSpecification(
         return TooltipSpecification(
             valueSources = valueSources,
             tooltipLinePatterns = tooltipLinePatterns,
-            tooltipProperties = tooltipProperties,
+            anchor = anchor,
+            minWidth = minWidth,
             tooltipTitle = tooltipTitle,
             disableSplitting = disableSplitting,
             tooltipGroup = tooltipGroup
@@ -47,7 +37,8 @@ class TooltipSpecification(
         val NONE = TooltipSpecification(
             valueSources = emptyList(),
             tooltipLinePatterns = emptyList(),
-            tooltipProperties = TooltipProperties.NONE,
+            anchor = null,
+            minWidth = null,
             tooltipTitle = null,
             disableSplitting = false,
             tooltipGroup = null,
@@ -56,7 +47,8 @@ class TooltipSpecification(
         fun defaultTooltip() = TooltipSpecification(
             valueSources = emptyList(),
             tooltipLinePatterns = null,
-            tooltipProperties = TooltipProperties.NONE,
+            anchor = null,
+            minWidth = null,
             tooltipTitle = null,
             disableSplitting = false,
             tooltipGroup = null,

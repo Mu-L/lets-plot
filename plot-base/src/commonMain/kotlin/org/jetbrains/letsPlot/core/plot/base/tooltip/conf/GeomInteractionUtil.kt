@@ -84,7 +84,8 @@ object GeomInteractionUtil {
             tooltipSpecification = TooltipSpecification(
                 valueSources = tooltipSpecificationWithDefaultGroup.valueSources,
                 tooltipLinePatterns = null,
-                tooltipProperties = TooltipSpecification.TooltipProperties.NONE,
+                anchor = null,
+                minWidth = null,
                 tooltipTitle = null,
                 disableSplitting = false,
                 tooltipGroup = tooltipSpecificationWithDefaultGroup.tooltipGroup,
@@ -486,7 +487,7 @@ object GeomInteractionUtil {
 
     private fun isCrosshairEnabled(geomKind: GeomKind, tooltipSpecification: TooltipSpecification): Boolean {
         // Crosshair is enabled if the general tooltip is moved to the specified position
-        if (tooltipSpecification.tooltipProperties.anchor == null) {
+        if (tooltipSpecification.anchor == null) {
             return false
         }
 
