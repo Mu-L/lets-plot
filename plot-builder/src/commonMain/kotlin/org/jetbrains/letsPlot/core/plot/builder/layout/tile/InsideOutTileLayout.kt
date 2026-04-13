@@ -12,6 +12,7 @@ import org.jetbrains.letsPlot.core.plot.base.layout.Thickness
 import org.jetbrains.letsPlot.core.plot.builder.coord.CoordProvider
 import org.jetbrains.letsPlot.core.plot.builder.layout.*
 import org.jetbrains.letsPlot.core.plot.builder.layout.LayoutConstants.FACET_PANEL_AXIS_EXPAND
+import kotlin.math.max
 
 internal class InsideOutTileLayout(
     private val axisLayoutQuad: AxisLayoutQuad,
@@ -19,15 +20,19 @@ internal class InsideOutTileLayout(
     private val vDomain: DoubleSpan,
     private val marginsLayout: GeomMarginsLayout,
     private val panelInset: Thickness,
-) : TileLayout {
-    override val insideOut: Boolean = true
+) {
 
-    @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
-    override fun doLayout(geomSize: DoubleVector, coordProvider: CoordProvider): TileLayoutInfo {
+    fun doLayout(geomContentSize: DoubleVector, coordProvider: CoordProvider): TileLayoutInfo {
 
-        val geomOuterBounds = DoubleRectangle(DoubleVector.ZERO, geomSize)
-        val geomInnerBounds = marginsLayout.toInnerBounds(geomOuterBounds)
-        val geomContentBounds = panelInset.shrinkRect(geomInnerBounds)
+        // Input is the geom *content* dimension (actual plotting area).
+        // Compute outer dimensions by working outwardly.
+        val geomContentSizeSafe = DoubleVector(
+            max(MIN_GEOM_CONTENT_SIZE, geomContentSize.x),
+            max(MIN_GEOM_CONTENT_SIZE, geomContentSize.y)
+        )
+        val geomContentBounds = DoubleRectangle(DoubleVector.ZERO, geomContentSizeSafe)
+        val geomInnerBounds = panelInset.inflateRect(geomContentBounds)
+        val geomOuterBounds = marginsLayout.toOuterBounds(geomInnerBounds)
 
         var axisInfos = computeAxisInfos(
             axisLayoutQuad,
@@ -61,6 +66,8 @@ internal class InsideOutTileLayout(
     }
 
     companion object {
+        private const val MIN_GEOM_CONTENT_SIZE = 10.0
+
         private fun computeAxisInfos(
             axisLayoutQuad: AxisLayoutQuad,
             geomSize: DoubleVector,

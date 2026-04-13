@@ -101,7 +101,7 @@ internal class PlotTile constructor(
 
         val liveMapGeomLayer = coreLayers.firstOrNull(GeomLayer::isLiveMap)
         if (liveMapGeomLayer != null) {
-            val realBounds = tileLayoutInfo.getAbsoluteOuterGeomBounds(tilesOrigin)
+            val realBounds = tileLayoutInfo.getAbsoluteGeomOuterBounds(tilesOrigin)
             val liveMapData = createCanvasFigure(liveMapGeomLayer, realBounds)
 
             liveMapCanvasDrawable = liveMapData.canvasDrawable
