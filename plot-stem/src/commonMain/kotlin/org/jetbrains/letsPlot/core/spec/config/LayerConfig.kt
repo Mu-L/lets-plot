@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023. JetBrains s.r.o.
+ * Copyright (c) 2026. JetBrains s.r.o.
  * Use of this source code is governed by the MIT license that can be found in the LICENSE file.
  */
 
@@ -11,7 +11,7 @@ import org.jetbrains.letsPlot.core.commons.data.DataType
 import org.jetbrains.letsPlot.core.commons.data.SeriesUtil
 import org.jetbrains.letsPlot.core.plot.base.*
 import org.jetbrains.letsPlot.core.plot.base.data.DataFrameUtil
-import org.jetbrains.letsPlot.core.plot.base.tooltip.TooltipSpecification
+import org.jetbrains.letsPlot.core.plot.base.tooltip.conf.TooltipBehavior
 import org.jetbrains.letsPlot.core.plot.base.util.YOrientationBaseUtil
 import org.jetbrains.letsPlot.core.plot.base.util.afterOrientation
 import org.jetbrains.letsPlot.core.plot.builder.MarginSide
@@ -167,7 +167,7 @@ class LayerConfig constructor(
     val varBindings: List<VarBinding>
     val constantsMap: Map<Aes<*>, Any>
 
-    val tooltips: TooltipSpecification
+    val tooltips: TooltipBehavior
     val annotations: AnnotationSpecification
 
     private val combinedDiscreteMappings: Map<String, String>
@@ -291,7 +291,7 @@ class LayerConfig constructor(
                 constantsMap, explicitGroupingVarNames
             )
         } else {
-            TooltipSpecification.defaultTooltip()
+            TooltipBehavior.defaultTooltip()
         }
 
         annotations = if (has(ANNOTATIONS)) {
@@ -544,7 +544,7 @@ class LayerConfig constructor(
             varBindings: List<VarBinding>,
             constantsMap: Map<Aes<*>, Any>,
             explicitGroupingVarNames: List<String>?
-        ): TooltipSpecification {
+        ): TooltipBehavior {
             return when (tooltipOptions) {
                 is Map<*, *> -> {
                     @Suppress("UNCHECKED_CAST")
@@ -556,7 +556,7 @@ class LayerConfig constructor(
                     ).createTooltips()
                 }
 
-                NONE -> TooltipSpecification.NONE
+                NONE -> TooltipBehavior.NONE
 
                 else -> error("Incorrect tooltips specification")
             }

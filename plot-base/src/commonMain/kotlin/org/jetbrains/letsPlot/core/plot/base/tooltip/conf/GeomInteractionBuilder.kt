@@ -23,7 +23,7 @@ class GeomInteractionBuilder constructor(
 
     val tooltipLines: List<LinePattern>
         get() = createTooltipLines(
-            tooltipBehavior.tooltipSpec,
+            tooltipBehavior,
             tooltipAes = tooltipAes,
             tooltipAxisAes = tooltipAxisAes,
             sideTooltipAes = sideTooltipAes,
@@ -31,7 +31,7 @@ class GeomInteractionBuilder constructor(
         )
 
     val tooltipTitle: LinePattern?
-        get() = tooltipBehavior.tooltipSpec.tooltipTitle
+        get() = tooltipBehavior.tooltipTitle
 
     fun tooltipConstants(v: Map<Aes<*>, Any>): GeomInteractionBuilder {
         tooltipConstants = v
@@ -63,7 +63,13 @@ class GeomInteractionBuilder constructor(
                     axisTooltipEnabled = true,
                     isCrosshairEnabled = false,
                     ignoreInvisibleTargets = false,
-                    tooltipSpec = org.jetbrains.letsPlot.core.plot.base.tooltip.TooltipSpecification.defaultTooltip(),
+                    valueSources = emptyList(),
+                    tooltipLinePatterns = null,
+                    anchor = null,
+                    minWidth = null,
+                    tooltipTitle = null,
+                    disableSplitting = false,
+                    tooltipGroup = null,
                 )
             )
         }
@@ -84,7 +90,13 @@ class GeomInteractionBuilder constructor(
                     axisTooltipEnabled = !area,
                     isCrosshairEnabled = false,
                     ignoreInvisibleTargets = false,
-                    tooltipSpec = org.jetbrains.letsPlot.core.plot.base.tooltip.TooltipSpecification.defaultTooltip(),
+                    valueSources = emptyList(),
+                    tooltipLinePatterns = null,
+                    anchor = null,
+                    minWidth = null,
+                    tooltipTitle = null,
+                    disableSplitting = false,
+                    tooltipGroup = null,
                 )
             )
         }

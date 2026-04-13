@@ -35,11 +35,11 @@ class GeomInteraction(builder: GeomInteractionBuilder) :
             // (issue #247 - With facet_grid tooltip shows data from last plot on all plots)
             dataAccess,
             dataFrame,
-            tooltipBehavior.tooltipSpec.anchor,
-            tooltipBehavior.tooltipSpec.minWidth,
+            tooltipBehavior.anchor,
+            tooltipBehavior.minWidth,
             tooltipBehavior.ignoreInvisibleTargets,
             tooltipBehavior.isCrosshairEnabled,
-            tooltipBehavior.tooltipSpec.tooltipGroup,
+            tooltipBehavior.tooltipGroup,
             tooltipTitle?.let(::LinePattern)
         )
     }

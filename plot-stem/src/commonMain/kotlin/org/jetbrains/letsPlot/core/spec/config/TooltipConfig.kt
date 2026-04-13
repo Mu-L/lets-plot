@@ -7,7 +7,7 @@ package org.jetbrains.letsPlot.core.spec.config
 
 import org.jetbrains.letsPlot.core.plot.base.Aes
 import org.jetbrains.letsPlot.core.plot.base.tooltip.TooltipAnchor
-import org.jetbrains.letsPlot.core.plot.base.tooltip.TooltipSpecification
+import org.jetbrains.letsPlot.core.plot.base.tooltip.conf.TooltipBehavior
 import org.jetbrains.letsPlot.core.plot.builder.VarBinding
 import org.jetbrains.letsPlot.core.spec.Option
 
@@ -18,14 +18,14 @@ class TooltipConfig(
     varBindings: List<VarBinding>
 ) : LineSpecConfig(opts, constantsMap, groupingVarNames, varBindings) {
 
-    fun createTooltips(): TooltipSpecification {
+    fun createTooltips(): TooltipBehavior {
         return create().run {
-            TooltipSpecification(
-                valueSources,
-                linePatterns,
+            TooltipBehavior(
+                valueSources = valueSources,
+                tooltipLinePatterns = linePatterns,
                 anchor = readAnchor(),
                 minWidth = getDouble(Option.Layer.Tooltips.TOOLTIP_MIN_WIDTH),
-                titleLine,
+                tooltipTitle = titleLine,
                 disableSplitting = getBoolean(Option.Layer.Tooltips.DISABLE_SPLITTING, def = false),
                 tooltipGroup = getString(Option.Layer.Tooltips.TOOLTIP_GROUP)
             )
