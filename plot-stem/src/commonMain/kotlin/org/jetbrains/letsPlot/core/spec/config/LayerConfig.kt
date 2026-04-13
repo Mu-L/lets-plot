@@ -288,10 +288,16 @@ class LayerConfig constructor(
             initTooltipsSpec(
                 tooltipOptions = getSafe(TOOLTIPS),
                 varBindings = varBindings.filter { it.aes in renderedAes }, // use rendered only (without stat.consumes())
-                constantsMap, explicitGroupingVarNames
+                constantsMap,
+                explicitGroupingVarNames,
+                geomKind = geomProto.geomKind,
+                statKind = statKind,
             )
         } else {
-            TooltipBehavior.defaultTooltip()
+            TooltipConfig.defaultTooltip(
+                geomKind = geomProto.geomKind,
+                statKind = statKind,
+            )
         }
 
         annotations = if (has(ANNOTATIONS)) {
@@ -543,7 +549,9 @@ class LayerConfig constructor(
             tooltipOptions: Any,  // An options map or just string "none"
             varBindings: List<VarBinding>,
             constantsMap: Map<Aes<*>, Any>,
-            explicitGroupingVarNames: List<String>?
+            explicitGroupingVarNames: List<String>?,
+            geomKind: GeomKind,
+            statKind: StatKind,
         ): TooltipBehavior {
             return when (tooltipOptions) {
                 is Map<*, *> -> {
@@ -553,7 +561,10 @@ class LayerConfig constructor(
                         constantsMap = constantsMap,
                         groupingVarNames = explicitGroupingVarNames,
                         varBindings = varBindings
-                    ).createTooltips()
+                    ).createTooltips(
+                        geomKind = geomKind,
+                        statKind = statKind,
+                    )
                 }
 
                 NONE -> TooltipBehavior.NONE
