@@ -3,6 +3,13 @@
 ### Added
 - WasmJS support [[LPK-296](https://github.com/JetBrains/lets-plot-kotlin/issues/296)], [[LPC-52](https://github.com/JetBrains/lets-plot-compose/issues/52)].
 
+- In legends:
+  - `override_aes` in `guide_legend()` can now customize filled 2D legend keys:
+    - `size` controls the key border width;
+    - `width` and `height` control the relative key size.
+
+    See: [example notebook](https://raw.githack.com/JetBrains/lets-plot/master/docs/f-26b/legend_key_size.html).
+
 ### Changed
 
 ### Fixed
