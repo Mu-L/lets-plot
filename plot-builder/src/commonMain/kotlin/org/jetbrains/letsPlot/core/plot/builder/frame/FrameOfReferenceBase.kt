@@ -242,8 +242,9 @@ internal abstract class FrameOfReferenceBase(
                     val ids = droppedPoints.map { it.index() }.toSet()
 
                     val n = ids.size
+                    val total = layer.dataFrame.rowCount()
                     val points = if (n == 1) "data point" else "data points"
-                    messageConsumer("$prefix Removed $n $points: missing or outside the scale limits.")
+                    messageConsumer("$prefix Removed $n $points out of $total: missing or outside the scale limits.")
                 }
             }
         }
