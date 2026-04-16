@@ -14,8 +14,8 @@ internal fun emitRemovedNonFiniteValuesMessage(
         return
     }
 
-    val points = if (droppedCount == 1) "data point" else "data points"
-    messageConsumer("Removed $droppedCount $points out of $totalCount containing non-finite values while computing stat.")
+    val rows = if (droppedCount == 1) "row" else "rows"
+    messageConsumer("Removed $droppedCount $rows out of $totalCount containing non-finite values.")
 }
 
 internal fun emitRemovedBySamplingMessage(
@@ -28,6 +28,6 @@ internal fun emitRemovedBySamplingMessage(
         return
     }
 
-    val points = if (droppedCount == 1) "data point" else "data points"
-    messageConsumer("Removed $droppedCount $points out of $totalCount by $samplingExpression while computing stat.")
+    val rows = if (droppedCount == 1) "row" else "rows"
+    messageConsumer("Removed $droppedCount $rows out of $totalCount by $samplingExpression.")
 }

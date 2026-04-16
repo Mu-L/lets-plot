@@ -73,7 +73,7 @@ internal object BackendDataProcUtil {
             varsWithoutBinding,
             layerConfig.orderOptions,
             layerConfig.aggregateOperation
-        ) { message -> messageHandler(createStatMessage(message)) }
+        ) { message -> messageHandler(createStatMessage(message, layerConfig)) }
     }
 
     private fun getStatName(layerConfig: LayerConfig): String {
@@ -85,11 +85,10 @@ internal object BackendDataProcUtil {
 
     internal fun createLayerMessage(message: String, layerConfig: LayerConfig): String {
         val geomKind = layerConfig.geomProto.geomKind.name.lowercase()
-        val stat = getStatName(layerConfig)
-        return "[$geomKind/$stat] $message"
+        return "[$geomKind] $message"
     }
 
-    private fun createStatMessage(statInfo: String): String {
-        return statInfo
+    private fun createStatMessage(statInfo: String, layerConfig: LayerConfig): String {
+        return statInfo.removeSuffix(".") + " by stat '${getStatName(layerConfig)}'."
     }
 }

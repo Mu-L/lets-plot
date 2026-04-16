@@ -233,7 +233,7 @@ internal abstract class FrameOfReferenceBase(
                 return DroppedPointsReporter.NONE
             }
             val messageConsumer = plotContext.getMessageConsumer()
-            val prefix = "[${layer.geomKind.name.lowercase()}/${layer.statName}]"
+            val prefix = "[${layer.geomKind.name.lowercase()}]"
 
             return object : DroppedPointsReporter {
                 override fun report(droppedPoints: Iterable<DataPointAesthetics>) {
@@ -243,8 +243,8 @@ internal abstract class FrameOfReferenceBase(
 
                     val n = ids.size
                     val total = layer.dataFrame.rowCount()
-                    val points = if (n == 1) "data point" else "data points"
-                    messageConsumer("$prefix Removed $n $points out of $total: missing or outside the scale limits.")
+                    val rows = if (n == 1) "row" else "rows"
+                    messageConsumer("$prefix Removed $n $rows out of $total: missing or outside the scale limits.")
                 }
             }
         }
