@@ -89,10 +89,7 @@ object PositionalScalesUtil {
     ): List<DoubleSpan> {
 
         fun expandDomain(domain: DoubleSpan?, scale: Scale, layers: List<GeomLayer>): DoubleSpan? {
-            return when (withExpand) {
-                true -> RangeUtil.expandRange(domain, aes, scale, layers)
-                false -> domain
-            }
+            return RangeUtil.expandRange(domain, aes, scale, layers, withExpand)
         }
 
         return when {
@@ -390,7 +387,8 @@ object PositionalScalesUtil {
             range: DoubleSpan?,
             aes: Aes<Double>,
             scale: Scale,
-            layers: List<GeomLayer>
+            layers: List<GeomLayer>,
+            withExpand: Boolean = true
         ): DoubleSpan? {
             val (lowerLim, upperLim) = scale.transform.let {
                 if (it is ContinuousTransform) it.definedLimits()
@@ -408,7 +406,11 @@ object PositionalScalesUtil {
                 false -> range
             }
 
-            return PlotUtil.rangeWithExpand(range, scale, includeZero)
+            return if (withExpand) {
+                PlotUtil.rangeWithExpand(range, scale, includeZero)
+            } else {
+                range
+            }
         }
 
         private fun updateRange(values: Iterable<Double>, wasRange: DoubleSpan?): DoubleSpan {
