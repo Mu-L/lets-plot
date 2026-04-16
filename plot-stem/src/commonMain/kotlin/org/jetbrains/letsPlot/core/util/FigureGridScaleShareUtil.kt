@@ -23,7 +23,7 @@ internal object FigureGridScaleShareUtil {
                 isApplicableElement(it) -> {
                     it as PlotConfigFrontend
                     val plotGeomTiles = PlotConfigFrontendUtil.createPlotGeomTiles(it)
-                    plotGeomTiles.overallXYContinuousDomains()
+                    plotGeomTiles.overallXYContinuousDomains(withExpand = false)
                 }
 
                 else -> Pair(null, null)
