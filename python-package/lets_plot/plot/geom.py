@@ -104,7 +104,7 @@ def geom_point(mapping=None, *, data=None, stat=None, position=None, show_legend
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -302,7 +302,7 @@ def geom_path(mapping=None, *, data=None, stat=None, position=None, show_legend=
         Draw geodesic. Coordinates expected to be in WGS84. Works only with `geom_livemap() <https://lets-plot.org/python/pages/api/lets_plot.geom_livemap.html>`__.
     color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
         Define the color aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -478,7 +478,7 @@ def geom_line(mapping=None, *, data=None, stat=None, position=None, show_legend=
         Set tooltips='none' to hide tooltips from the layer.
     color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
         Define the color aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -669,7 +669,7 @@ def geom_smooth(mapping=None, *, data=None, stat=None, position=None, show_legen
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -867,7 +867,7 @@ def geom_bar(mapping=None, *, data=None, stat=None, position=None, show_legend=N
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -1057,7 +1057,7 @@ def geom_histogram(mapping=None, *, data=None, stat=None, position=None, show_le
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -1249,7 +1249,7 @@ def geom_dotplot(mapping=None, *, data=None, show_legend=None, inherit_aes=None,
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -1410,7 +1410,7 @@ def geom_bin2d(mapping=None, *, data=None, stat=None, position=None, show_legend
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -1608,7 +1608,7 @@ def geom_hex(mapping=None, *, data=None, stat=None, position=None, show_legend=N
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -1798,7 +1798,7 @@ def geom_tile(mapping=None, *, data=None, stat=None, position=None, show_legend=
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -1951,7 +1951,7 @@ def geom_raster(mapping=None, *, data=None, stat=None, position=None, show_legen
         To prevent any sampling for this layer pass value "none" (string "none").
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -2068,7 +2068,7 @@ def geom_errorbar(mapping=None, *, data=None, stat=None, position=None, show_leg
 
     color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
         Define the color aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -2251,7 +2251,7 @@ def geom_crossbar(mapping=None, *, data=None, stat=None, position=None, show_leg
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -2401,7 +2401,7 @@ def geom_pointrange(mapping=None, *, data=None, stat=None, position=None, show_l
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -2542,7 +2542,7 @@ def geom_linerange(mapping=None, *, data=None, stat=None, position=None, show_le
         Set tooltips='none' to hide tooltips from the layer.
     color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
         Define the color aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -2677,7 +2677,7 @@ def geom_contour(mapping=None, *, data=None, stat=None, position=None, show_lege
         Distance between levels.
     color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
         Define the color aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -2837,7 +2837,7 @@ def geom_contourf(mapping=None, *, data=None, stat=None, position=None, show_leg
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -2998,7 +2998,7 @@ def geom_polygon(mapping=None, *, data=None, stat=None, position=None, show_lege
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -3194,7 +3194,7 @@ def geom_map(mapping=None, *, data=None, stat=None, position=None, show_legend=N
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -3358,7 +3358,7 @@ def geom_abline(mapping=None, *, data=None, stat=None, position=None, show_legen
         The value of y at the point where the line crosses the y-axis.
     color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
         Define the color aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -3476,7 +3476,7 @@ def geom_band(mapping=None, *, data=None, stat=None, position=None, show_legend=
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -3597,7 +3597,7 @@ def geom_hline(mapping=None, *, data=None, stat=None, position=None, show_legend
         The value of y at the point where the line crosses the y-axis.
     color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
         Define the color aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -3726,7 +3726,7 @@ def geom_vline(mapping=None, *, data=None, stat=None, position=None, show_legend
         The value of x at the point where the line crosses the x-axis.
     color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
         Define the color aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -3892,7 +3892,7 @@ def geom_boxplot(mapping=None, *, data=None, stat=None, position=None, show_lege
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -4137,7 +4137,7 @@ def geom_violin(mapping=None, *, data=None, stat=None, position=None, show_legen
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -4374,7 +4374,7 @@ def geom_sina(mapping=None, *, data=None, stat=None, position=None, show_legend=
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -4576,7 +4576,7 @@ def geom_ydotplot(mapping=None, *, data=None, show_legend=None, inherit_aes=None
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -4773,7 +4773,7 @@ def geom_area_ridges(mapping=None, *, data=None, stat=None, position=None, show_
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -4935,7 +4935,7 @@ def geom_ribbon(mapping=None, *, data=None, stat=None, position=None, show_legen
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -5073,7 +5073,7 @@ def geom_area(mapping=None, *, data=None, stat=None, position=None, show_legend=
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -5243,7 +5243,7 @@ def geom_density(mapping=None, *, data=None, stat=None, position=None, show_lege
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -5457,7 +5457,7 @@ def geom_density2d(mapping=None, *, data=None, stat=None, position=None, show_le
         Distance between levels.
     color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
         Define the color aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -5698,7 +5698,7 @@ def geom_density2df(mapping=None, *, data=None, stat=None, position=None, show_l
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -5953,7 +5953,7 @@ def geom_pointdensity(mapping=None, *, data=None, stat=None, position=None, show
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -6159,7 +6159,7 @@ def geom_jitter(mapping=None, *, data=None, stat=None, position=None, show_legen
     seed : int
         A random seed to make the jitter reproducible.
         If None (the default value), the seed is initialised with a random value.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -6308,7 +6308,7 @@ def geom_qq(mapping=None, *, data=None, stat=None, position=None, show_legend=No
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -6444,7 +6444,7 @@ def geom_qq2(mapping=None, *, data=None, stat=None, position=None, show_legend=N
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -6576,7 +6576,7 @@ def geom_qq_line(mapping=None, *, data=None, stat=None, position=None, show_lege
         Pair of quantiles to use when fitting the Q-Q line.
     color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
         Define the color aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -6705,7 +6705,7 @@ def geom_qq2_line(mapping=None, *, data=None, stat=None, position=None, show_leg
         Pair of quantiles to use when fitting the Q-Q line.
     color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
         Define the color aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -6813,7 +6813,7 @@ def geom_freqpoly(mapping=None, *, data=None, stat=None, position=None, show_leg
         Possible values: 'x', 'y'.
     color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
         Define the color aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -6946,7 +6946,7 @@ def geom_step(mapping=None, *, data=None, stat=None, position=None, show_legend=
         'vh' or 'VH' stands for vertical then horizontal.
     color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
         Define the color aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -7082,7 +7082,7 @@ def geom_rect(mapping=None, *, data=None, stat=None, position=None, show_legend=
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -7262,7 +7262,7 @@ def geom_segment(mapping=None, *, data=None, stat=None, position=None, show_lege
         Pixels to shorten segment, creating gaps at start/end points.
     color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
         Define the color aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -7433,7 +7433,7 @@ def geom_curve(mapping=None, *, data=None, stat=None, position=None, show_legend
         Pixels to shorten segment, creating gaps at start/end points.
     color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
         Define the color aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -7580,7 +7580,7 @@ def geom_spoke(mapping=None, *, data=None, position=None, show_legend=None, inhe
         The part of the segment that is anchored to the plane. The segment rotates about this point.
     color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
         Define the color aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -7774,7 +7774,7 @@ def geom_text(mapping=None, *, data=None, stat=None, position=None, show_legend=
         If True, skip plotting text that overlaps previous text in the same layer.
     color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
         Define the color aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -8038,7 +8038,7 @@ def geom_label(mapping=None, *, data=None, stat=None, position=None, show_legend
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -8325,7 +8325,7 @@ def geom_text_repel(mapping=None, *, data=None, stat=None, position=None, show_l
         Minimum length of the line connecting the label to the point. Shorter segments will be omitted.
     arrow : ``FeatureSpec``
         Specification for arrow head, as created by `arrow() <https://lets-plot.org/python/pages/api/lets_plot.arrow.html>`__ function.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -8555,7 +8555,7 @@ def geom_label_repel(mapping=None, *, data=None, stat=None, position=None, show_
         Minimum length of the line connecting the label to the point. Shorter segments will be omitted.
     arrow : ``FeatureSpec``
         Specification for arrow head, as created by `arrow() <https://lets-plot.org/python/pages/api/lets_plot.arrow.html>`__ function.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -8741,7 +8741,7 @@ def geom_pie(mapping=None, *, data=None, stat=None, position=None, show_legend=N
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the source aesthetic for geometry filling.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -8989,7 +8989,7 @@ def geom_lollipop(mapping=None, *, data=None, stat=None, position=None, show_leg
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -9136,7 +9136,7 @@ def geom_count(mapping=None, *, data=None, stat=None, position=None, show_legend
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -9311,7 +9311,7 @@ def geom_bracket(mapping=None, *, data=None, stat=None, position=None, show_lege
 
     color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
         Define the color aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -9527,7 +9527,7 @@ def geom_bracket_dodge(mapping=None, *, data=None, stat=None, position=None, sho
 
     color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
         Define the color aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -9684,7 +9684,7 @@ def geom_blank(mapping=None, *, data=None, stat=None, position=None, show_legend
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.

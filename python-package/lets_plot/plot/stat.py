@@ -67,7 +67,7 @@ def stat_summary(mapping=None, *, data=None, geom=None,
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -233,7 +233,7 @@ def stat_summary_bin(mapping=None, *, data=None, geom=None,
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -380,7 +380,7 @@ def stat_ecdf(mapping=None, *, data=None, geom=None,
         (-inf, 0) and (inf, 1) are added to the ecdf.
     color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
         Define the color aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
@@ -519,7 +519,7 @@ def stat_sum(mapping=None, *, data=None, geom=None, position=None, show_legend=N
         Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the fill aesthetic for the geometry.
-    na_rm : bool
+    na_rm : bool, default=False
         If True, silently removes missing values. If False, missing values are removed with a warning.
     other_args
         Other arguments passed on to the layer.
