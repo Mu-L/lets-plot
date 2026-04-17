@@ -805,7 +805,7 @@ def geom_smooth(mapping=None, *, data=None, stat=None, position=None, show_legen
                               seed=seed,
                               max_n=max_n,
                               color_by=color_by, fill_by=fill_by,
-                              na_rm=na_rm,
+                              na_rm=True,
                               **other_args)
 
     return smooth_layer
