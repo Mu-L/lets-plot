@@ -12,13 +12,20 @@ import org.jetbrains.letsPlot.core.plot.base.render.LegendKeyElementFactory
 import org.jetbrains.letsPlot.datamodel.svg.dom.SvgGElement
 import org.jetbrains.letsPlot.datamodel.svg.dom.SvgRectElement
 
-class FilledSquareLegendKeyElementFactory :
+class FilledRectLegendKeyElementFactory :
     LegendKeyElementFactory {
+    override val supportsKeySizeMultiplier: Boolean
+        get() = true
+
     override fun createKeyElement(p: DataPointAesthetics, size: DoubleVector): SvgGElement {
         val rect = SvgRectElement(0.0, 0.0, size.x, size.y)
         AestheticsUtil.updateFill(rect, p)
         val g = SvgGElement()
         g.children().add(rect)
         return g
+    }
+
+    override fun minimumKeySize(p: DataPointAesthetics): DoubleVector {
+        return DoubleVector.ZERO
     }
 }

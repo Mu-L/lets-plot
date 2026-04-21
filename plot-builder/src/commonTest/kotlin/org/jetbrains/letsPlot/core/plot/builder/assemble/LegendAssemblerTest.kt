@@ -11,6 +11,8 @@ import org.jetbrains.letsPlot.commons.geometry.DoubleVector
 import org.jetbrains.letsPlot.core.plot.base.Aes
 import org.jetbrains.letsPlot.core.plot.base.DataPointAesthetics
 import org.jetbrains.letsPlot.commons.values.Color
+import org.jetbrains.letsPlot.core.plot.base.geom.FilledRectLegendKeyElementFactory
+import org.jetbrains.letsPlot.core.plot.base.geom.util.BoxHelper
 import org.jetbrains.letsPlot.core.plot.base.render.LegendKeyElementFactory
 import org.jetbrains.letsPlot.core.plot.builder.guide.LegendBreak
 import org.jetbrains.letsPlot.datamodel.svg.dom.SvgGElement
@@ -278,6 +280,57 @@ class LegendAssemblerTest {
         assertEquals(DoubleVector(32.0, 32.0), legendBreak.preferredKeySize(DoubleVector(20.0, 20.0)))
     }
 
+    @Test
+    fun filledRectKeyFactorySupportsKeySizeMultiplier() {
+        val legendBreak = LegendBreak("label")
+        legendBreak.addLayer(
+            FAKE_DATA_POINT,
+            FilledRectLegendKeyElementFactory(),
+            keySizeMultiplier = DoubleVector(2.0, 0.5)
+        )
+
+        assertEquals(DoubleVector(40.0, 10.0), legendBreak.preferredKeySize(DoubleVector(20.0, 20.0)))
+    }
+
+    @Test
+    fun filledRectKeyFactoryMinimumDoesNotDependOnStrokeSize() {
+        val legendBreak = LegendBreak("label")
+        legendBreak.addLayer(
+            dataPoint(mapOf(Aes.SIZE to 100.0)),
+            FilledRectLegendKeyElementFactory()
+        )
+
+        assertEquals(DoubleVector(20.0, 20.0), legendBreak.preferredKeySize(DoubleVector(20.0, 20.0)))
+    }
+
+    @Test
+    fun boxplotKeyFactorySupportsKeySizeMultiplierWhenOptedIn() {
+        val legendBreak = LegendBreak("label")
+        legendBreak.addLayer(
+            dataPoint(mapOf(Aes.SIZE to 0.0)),
+            BoxHelper.legendFactory(
+                whiskers = true,
+                showMidline = true,
+                supportsKeySizeMultiplier = true
+            ),
+            keySizeMultiplier = DoubleVector(2.0, 0.5)
+        )
+
+        assertEquals(DoubleVector(40.0, 10.0), legendBreak.preferredKeySize(DoubleVector(20.0, 20.0)))
+    }
+
+    @Test
+    fun boxKeyFactoryIgnoresKeySizeMultiplierByDefault() {
+        val legendBreak = LegendBreak("label")
+        legendBreak.addLayer(
+            dataPoint(mapOf(Aes.SIZE to 0.0)),
+            BoxHelper.legendFactory(whiskers = true, showMidline = true),
+            keySizeMultiplier = DoubleVector(2.0, 0.5)
+        )
+
+        assertEquals(DoubleVector(20.0, 20.0), legendBreak.preferredKeySize(DoubleVector(20.0, 20.0)))
+    }
+
     private fun legendKeyElementFactory(
         minimumKeySize: DoubleVector,
         supportsKeySizeMultiplier: Boolean
@@ -307,6 +360,21 @@ class LegendAssemblerTest {
             override val colorAes: Aes<Color> = Aes.COLOR
 
             override val fillAes: Aes<Color> = Aes.FILL
+        }
+
+        fun dataPoint(aesValues: Map<Aes<*>, Any>): DataPointAesthetics {
+            return object : DataPointAesthetics() {
+                override fun index(): Int = 0
+
+                override fun group(): Int? = null
+
+                @Suppress("UNCHECKED_CAST")
+                override fun <T> get(aes: Aes<T>): T? = aesValues[aes] as T?
+
+                override val colorAes: Aes<Color> = Aes.COLOR
+
+                override val fillAes: Aes<Color> = Aes.FILL
+            }
         }
     }
 }
