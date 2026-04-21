@@ -37,13 +37,14 @@ import org.jetbrains.letsPlot.core.spec.back.data.PlotSampling
 import org.jetbrains.letsPlot.core.spec.config.*
 import org.jetbrains.letsPlot.core.spec.getString
 
-open class PlotConfigBackend(
+open class PlotConfigBackend constructor(
     opts: Map<String, Any>,
     containerTheme: Theme?,
 ) : PlotConfig(
     opts,
     containerTheme,
-    isClientSide = false
+    isClientSide = false,
+    isInDeck = false
 ) {
     private val transformByAes: Map<Aes<*>, Transform>
 

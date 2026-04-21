@@ -153,7 +153,8 @@ object MonolithicCommon {
         val computationMessages = ArrayList<String>()
         val config = PlotConfigFrontend.create(
             plotSpec,
-            containerTheme = null
+            containerTheme = null,
+            isInDeck = false,
         ) {
             computationMessages.addAll(it)
         }
