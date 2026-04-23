@@ -8,17 +8,14 @@ package org.jetbrains.letsPlot.core.plot.base.tooltip.loc
 import org.jetbrains.letsPlot.commons.geometry.DoubleVector
 import org.jetbrains.letsPlot.commons.intern.util.ClosestPointChecker
 import org.jetbrains.letsPlot.core.plot.base.GeomKind
-import org.jetbrains.letsPlot.core.plot.base.tooltip.ContextualMapping
-import org.jetbrains.letsPlot.core.plot.base.tooltip.GeomTarget
-import org.jetbrains.letsPlot.core.plot.base.tooltip.GeomTargetLocator
+import org.jetbrains.letsPlot.core.plot.base.tooltip.*
 import org.jetbrains.letsPlot.core.plot.base.tooltip.GeomTargetLocator.LookupSpace
 import org.jetbrains.letsPlot.core.plot.base.tooltip.GeomTargetLocator.LookupSpace.X
 import org.jetbrains.letsPlot.core.plot.base.tooltip.GeomTargetLocator.LookupSpace.Y
 import org.jetbrains.letsPlot.core.plot.base.tooltip.GeomTargetLocator.LookupStrategy
 import org.jetbrains.letsPlot.core.plot.base.tooltip.GeomTargetLocator.LookupStrategy.HOVER
-import org.jetbrains.letsPlot.core.plot.base.tooltip.HitShape
 import org.jetbrains.letsPlot.core.plot.base.tooltip.HitShape.Kind.*
-import org.jetbrains.letsPlot.core.plot.base.tooltip.TipLayoutHint.Kind.CURSOR_TOOLTIP
+import org.jetbrains.letsPlot.core.plot.base.tooltip.TooltipHint.Placement.CURSOR
 import org.jetbrains.letsPlot.core.plot.base.tooltip.loc.LayerTargetLocator.Collector.CollectingStrategy
 import kotlin.math.max
 
@@ -30,7 +27,6 @@ internal class LayerTargetLocator(
 ) : GeomTargetLocator {
 
     private val myTargets = ArrayList<Target>()
-    private val myTargetDetector = TargetDetector(lookupSpec.lookupSpace, lookupSpec.lookupStrategy)
 
     private val mySimpleGeometry = setOf(GeomKind.RECT, GeomKind.POLYGON)
 
@@ -57,25 +53,19 @@ internal class LayerTargetLocator(
     init {
         fun toProjection(prototype: TargetPrototype): TargetProjection {
             return when (prototype.hitShape.kind) {
-                POINT -> PointTargetProjection.create(
+                POINT -> PointTargetProjection(
                     prototype.hitShape.point.center,
                     prototype.hitShape.point.radius,
                     lookupSpec.lookupSpace
                 )
 
-                RECT -> RectTargetProjection.create(
-                    prototype.hitShape.rect,
-                    lookupSpec.lookupSpace
-                )
+                RECT -> RectTargetProjection(prototype.hitShape.rect, lookupSpec.lookupSpace)
+                POLYGON -> PolygonTargetProjection(prototype.hitShape.points, lookupSpec.lookupSpace)
 
-                POLYGON -> PolygonTargetProjection.create(
-                    prototype.hitShape.points,
-                    lookupSpec.lookupSpace
-                )
-
-                PATH -> PathTargetProjection.create(
-                    prototype.hitShape.points,
-                    prototype.indexMapper,
+                PATH -> PathTargetProjection(
+                    prototype.hitShape.points.mapIndexed { i, point ->
+                        PathTargetProjection.PathPoint(point, prototype.indexMapper(i))
+                    },
                     lookupSpec.lookupSpace
                 )
             }
@@ -93,7 +83,7 @@ internal class LayerTargetLocator(
 
     private fun addLookupResults(
         collector: Collector<GeomTarget>,
-        targets: MutableList<GeomTargetLocator.LookupResult>,
+        targets: MutableList<LookupResult>,
         hitShapeKind: HitShape.Kind
     ) {
         if (collector.size() == 0) {
@@ -101,11 +91,13 @@ internal class LayerTargetLocator(
         }
 
         targets.add(
-            GeomTargetLocator.LookupResult(
+            LookupResult(
                 collector.collection(),
                 // Distance can be negative when lookup space is X or Y
                 // In this case use 0.0 as a distance - we have a direct hit.
                 max(0.0, collector.closestPointChecker.distance),
+                ownerDistance(collector.cursor, collector.collection(), lookupSpec.lookupSpace),
+                lookupSpec,
                 geomKind,
                 contextualMapping,
                 hitShapeKind
@@ -113,7 +105,7 @@ internal class LayerTargetLocator(
         )
     }
 
-    override fun search(coord: DoubleVector): GeomTargetLocator.LookupResult? {
+    override fun search(coord: DoubleVector): LookupResult? {
         if (myTargets.isEmpty()) {
             return null
         }
@@ -133,7 +125,7 @@ internal class LayerTargetLocator(
             }
         }
 
-        val lookupResults = ArrayList<GeomTargetLocator.LookupResult>()
+        val lookupResults = ArrayList<LookupResult>()
 
         addLookupResults(pathCollector, lookupResults, PATH)
         addLookupResults(rectCollector, lookupResults, RECT)
@@ -143,16 +135,16 @@ internal class LayerTargetLocator(
         return getClosestTarget(lookupResults)
     }
 
-    private fun getClosestTarget(lookupResults: List<GeomTargetLocator.LookupResult>): GeomTargetLocator.LookupResult? {
+    private fun getClosestTarget(lookupResults: List<LookupResult>): LookupResult? {
         if (lookupResults.isEmpty()) {
             return null
         }
 
-        var closestTargets: GeomTargetLocator.LookupResult = lookupResults[0]
-        require(closestTargets.distance >= 0)
+        var closestTargets: LookupResult = lookupResults[0]
+        require(closestTargets.lookupDistance >= 0)
 
         for (lookupResult in lookupResults) {
-            if (lookupResult.distance < closestTargets.distance) {
+            if (lookupResult.lookupDistance < closestTargets.lookupDistance) {
                 closestTargets = lookupResult
             }
         }
@@ -160,11 +152,11 @@ internal class LayerTargetLocator(
     }
 
     private fun processRect(coord: DoubleVector, target: Target, resultCollector: Collector<GeomTarget>) {
-        if (myTargetDetector.checkRect(coord, target.rectProjection, resultCollector.closestPointChecker)) {
+        if (target.rectProjection.check(coord, lookupSpec.lookupStrategy, resultCollector.closestPointChecker)) {
 
             val rect = target.prototype.hitShape.rect
             val yOffset = when {
-                target.prototype.tooltipKind == CURSOR_TOOLTIP -> rect.height / 2.0
+                target.prototype.tooltipPlacement == CURSOR -> rect.height / 2.0
                 lookupSpec.lookupSpace == Y -> rect.height / 2.0
                 else -> 0.0
             }
@@ -174,9 +166,11 @@ internal class LayerTargetLocator(
                 else -> 0.0
             }
 
+            val hitCoord = target.prototype.tooltipAnchor
+                ?: rect.origin.add(DoubleVector(rect.width / 2, yOffset))
             resultCollector.collect(
                 target.prototype.createGeomTarget(
-                    rect.origin.add(DoubleVector(rect.width / 2, yOffset)),
+                    hitCoord,
                     getKeyForSingleObjectGeometry(target.prototype),
                     objectRadius = hintOffset
                 )
@@ -185,7 +179,7 @@ internal class LayerTargetLocator(
     }
 
     private fun processPolygon(coord: DoubleVector, target: Target, resultCollector: Collector<GeomTarget>) {
-        if (myTargetDetector.checkPolygon(coord, target.polygonProjection, resultCollector.closestPointChecker)) {
+        if (target.polygonProjection.check(coord, lookupSpec.lookupStrategy, resultCollector.closestPointChecker)) {
 
             resultCollector.collect(
                 target.prototype.createGeomTarget(
@@ -197,7 +191,7 @@ internal class LayerTargetLocator(
     }
 
     private fun processPoint(coord: DoubleVector, target: Target, resultCollector: Collector<GeomTarget>) {
-        if (myTargetDetector.checkPoint(coord, target.pointProjection, resultCollector.closestPointChecker)) {
+        if (target.pointProjection.check(coord, lookupSpec.lookupStrategy, resultCollector.closestPointChecker)) {
 
             resultCollector.collect(
                 target.prototype.createGeomTarget(
@@ -210,14 +204,11 @@ internal class LayerTargetLocator(
     }
 
     private fun processPath(coord: DoubleVector, target: Target, resultCollector: Collector<GeomTarget>) {
-        // When searching single point from all targets (REPLACE) - should search nearest projection between every path target.
-        // When searching points for every target (APPEND) - should reset nearest point between every path target.
-        val pointChecker = if (myCollectingStrategy == CollectingStrategy.APPEND)
-            ClosestPointChecker(coord)
-        else
-            resultCollector.closestPointChecker
-
-        val lookupResult = myTargetDetector.checkPath(coord, target.pathProjection, pointChecker)
+        val lookupResult = target.pathProjection.check(
+            cursorCoord = coord,
+            lookupStrategy = lookupSpec.lookupStrategy,
+            closestPointChecker = resultCollector.closestPointChecker
+        )
         if (lookupResult != null) {
             val hitPoint = lookupResult.first
             val hitCoord = lookupResult.second ?: hitPoint.originalCoord
@@ -233,6 +224,22 @@ internal class LayerTargetLocator(
 
     private fun getKeyForSingleObjectGeometry(prototype: TargetPrototype): Int {
         return prototype.indexMapper(0)
+    }
+
+    private fun ownerDistance(
+        cursor: DoubleVector,
+        targets: List<GeomTarget>,
+        lookupSpace: LookupSpace
+    ): Double {
+        return targets.minOf { target ->
+            val offset = target.tooltipHint.coord.subtract(cursor)
+            when (lookupSpace) {
+                X -> kotlin.math.abs(offset.x)
+                Y -> kotlin.math.abs(offset.y)
+                LookupSpace.XY -> offset.length()
+                LookupSpace.NONE -> error("Distance calculation is not supported for NONE lookup space")
+            }
+        }
     }
 
     internal class Target(private val targetProjection: TargetProjection, val prototype: TargetPrototype) {
@@ -251,14 +258,15 @@ internal class LayerTargetLocator(
     }
 
     internal class Collector<T>(
-        cursor: DoubleVector,
+        val cursor: DoubleVector,
         private val myStrategy: CollectingStrategy,
         lookupSpace: LookupSpace
     ) {
         private val result = ArrayList<T>()
+
         val closestPointChecker: ClosestPointChecker = when (lookupSpace) {
-            X -> ClosestPointChecker(DoubleVector(cursor.x, 0.0))
-            Y -> ClosestPointChecker(DoubleVector(0.0, cursor.y))
+            X -> ClosestPointChecker(cursor)
+            Y -> ClosestPointChecker(cursor)
             else -> ClosestPointChecker(cursor)
         }
         private var myLastAddedDistance: Double = -1.0
