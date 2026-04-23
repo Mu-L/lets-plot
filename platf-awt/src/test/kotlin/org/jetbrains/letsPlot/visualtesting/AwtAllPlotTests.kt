@@ -13,7 +13,7 @@ import kotlin.test.Test
 
 class AwtAllPlotTests {
     val canvasPeer = AwtCanvasPeer(fontManager = NotoFontManager.INSTANCE)
-    val awtBitmapIO = AwtBitmapIO()
+    val awtBitmapIO = AwtBitmapIO(subdir = "visual-testing/plot")
 
     val imageComparer = ImageComparer(canvasPeer, awtBitmapIO, silent = true)
 

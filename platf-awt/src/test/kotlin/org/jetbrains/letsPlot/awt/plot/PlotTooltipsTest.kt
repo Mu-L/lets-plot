@@ -22,7 +22,7 @@ import kotlin.test.Test
 
 class PlotTooltipsTest : PlotTestBase() {
     override val canvasPeer: CanvasPeer = AwtCanvasPeer(fontManager = NotoFontManager.INSTANCE)
-    override val imageComparer: ImageComparer = ImageComparer(canvasPeer, AwtBitmapIO(), silent = true)
+    override val imageComparer: ImageComparer = ImageComparer(canvasPeer, AwtBitmapIO(subdir = "tooltips"), silent = true)
 
     init {
         registerTest(::plot_tooltips_pointAndLine_lineTooltip)
