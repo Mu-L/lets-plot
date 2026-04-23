@@ -43,3 +43,4 @@ canvas_path_simpleBezierCurve.png
 canvas_path_skewXTransform.png
 canvas_path_zigZagFill.png
 canvas_path_zigZagStroke.png
+canvas_text_transparent.png

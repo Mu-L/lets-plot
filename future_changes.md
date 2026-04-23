@@ -21,3 +21,4 @@
 ### Changed
 
 ### Fixed
+- Alpha is not supported in element_text() [[#1462](https://github.com/JetBrains/lets-plot/issues/1462)].
