@@ -38,10 +38,9 @@ import org.jetbrains.letsPlot.core.spec.Option.SubPlots.Grid.ROW_HEIGHTS
 import org.jetbrains.letsPlot.core.spec.Option.SubPlots.Grid.VSPACE
 import org.jetbrains.letsPlot.core.spec.Option.SubPlots.Layout
 import org.jetbrains.letsPlot.core.spec.Option.SubPlots.Layout.NAME
-import org.jetbrains.letsPlot.core.spec.config.CompositeFigureConfig.DeckPosition.FIRST
+import org.jetbrains.letsPlot.core.spec.config.DeckFigureConfigUtil.applyDeckOverlayTheme
 import org.jetbrains.letsPlot.core.spec.front.PlotConfigFrontend
 import org.jetbrains.letsPlot.core.util.PlotSizeHelper
-import org.jetbrains.letsPlot.core.plot.builder.defaultTheme.values.ThemeOption.ELEMENT_BLANK_SHORTHAND as BLANK
 
 class CompositeFigureConfig constructor(
     opts: Map<String, Any>,
@@ -274,120 +273,6 @@ class CompositeFigureConfig constructor(
         return CompositeFigureDeckLayout(shareX = deckShareConfig.shareX, shareY = deckShareConfig.shareY)
     }
 
-    companion object {
-        private val DECK_OVERLAY_THEME_BASE = mapOf(
-            ThemeOption.PLOT_BKGR_RECT to BLANK,
-            ThemeOption.PANEL_BKGR_RECT to BLANK,
-            ThemeOption.PANEL_BORDER_RECT to BLANK,
-            ThemeOption.PANEL_GRID to BLANK,
-        )
-
-        @Suppress("UNCHECKED_CAST")
-        private fun axisBlankX(deckTheme: DefaultTheme): Map<String, Any> {
-            val deckAxisTicksOption = deckTheme.options[ThemeOption.AXIS_TICKS_X] as? Map<String, Any> ?: emptyMap()
-            val deckAxisTextOption = deckTheme.options[ThemeOption.AXIS_TEXT_X] as? Map<String, Any> ?: emptyMap()
-            val deckAxisTitleOption = deckTheme.options[ThemeOption.AXIS_TITLE_X] as? Map<String, Any> ?: emptyMap()
-            // Use transparency instead of BLANK to preserve the space for axis text and ticks.
-            val axisTicksOption = deckAxisTicksOption + mapOf(ThemeOption.Elem.COLOR to "transparent")
-            val axisTextsOption = deckAxisTextOption + mapOf(ThemeOption.Elem.COLOR to "transparent")
-            val axisTitleOption = deckAxisTitleOption + mapOf(ThemeOption.Elem.COLOR to "transparent")
-            return mapOf(
-                ThemeOption.AXIS_TICKS_X to axisTicksOption,
-                ThemeOption.AXIS_TEXT_X to axisTextsOption,
-                ThemeOption.AXIS_TITLE_X to axisTitleOption,
-            )
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        private fun axisBlankY(deckTheme: DefaultTheme): Map<String, Any> {
-            val deckAxisTicksOption = deckTheme.options[ThemeOption.AXIS_TICKS_Y] as? Map<String, Any> ?: emptyMap()
-            val deckAxisTextOption = deckTheme.options[ThemeOption.AXIS_TEXT_Y] as? Map<String, Any> ?: emptyMap()
-            val deckAxisTitleOption = deckTheme.options[ThemeOption.AXIS_TITLE_Y] as? Map<String, Any> ?: emptyMap()
-            // Use transparency instead of BLANK to preserve the space for axis text and ticks.
-            val axisTicksOption = deckAxisTicksOption + mapOf(ThemeOption.Elem.COLOR to "transparent")
-            val axisTextsOption = deckAxisTextOption + mapOf(ThemeOption.Elem.COLOR to "transparent")
-            val axisTitleOption = deckAxisTitleOption + mapOf(ThemeOption.Elem.COLOR to "transparent")
-            return mapOf(
-                ThemeOption.AXIS_TICKS_Y to axisTicksOption,
-                ThemeOption.AXIS_TEXT_Y to axisTextsOption,
-                ThemeOption.AXIS_TITLE_Y to axisTitleOption,
-            )
-        }
-
-
-        private fun axisLineBlankX(deckTheme: DefaultTheme): Map<String, Any> {
-            @Suppress("UNCHECKED_CAST")
-            val deckAxisLineOption = deckTheme.options[ThemeOption.AXIS_LINE_X] as? Map<String, Any> ?: emptyMap()
-            // Use transparency instead of BLANK to preserve the space for the axis line.
-            val axisLineOption = deckAxisLineOption + mapOf(ThemeOption.Elem.COLOR to "transparent")
-            return mapOf(
-                ThemeOption.AXIS_LINE_X to axisLineOption,
-            )
-        }
-
-        private fun axisLineBlankY(deckTheme: DefaultTheme): Map<String, Any> {
-            @Suppress("UNCHECKED_CAST")
-            val deckAxisLineOption = deckTheme.options[ThemeOption.AXIS_LINE_Y] as? Map<String, Any> ?: emptyMap()
-            // Use transparency instead of BLANK to preserve the space for the axis line.
-            val axisLineOption = deckAxisLineOption + mapOf(ThemeOption.Elem.COLOR to "transparent")
-            return mapOf(
-                ThemeOption.AXIS_LINE_Y to axisLineOption,
-            )
-        }
-
-        private fun applyDeckOverlayTheme(
-            spec: Map<String, Any>,
-            deckTheme: DefaultTheme,
-            shareX: Boolean,
-            shareY: Boolean,
-            position: DeckPosition,
-            ontopX: Boolean,
-            ontopY: Boolean
-        ): Map<String, Any> {
-
-            val axisLineBlankX = axisLineBlankX(deckTheme)
-            val axisLineBlankY = axisLineBlankY(deckTheme)
-
-            val overlayTheme = if (position == FIRST) {
-                // The first figure (base plot) retains all axis elements with one possible exception: shared axis line.
-                val axisLineX = if (shareX && ontopX) axisLineBlankX else emptyMap()
-                val axisLineY = if (shareY && ontopY) axisLineBlankY else emptyMap()
-                axisLineX + axisLineY
-            } else {
-                val axisBlankX = axisBlankX(deckTheme)
-                val axisBlankY = axisBlankY(deckTheme)
-
-                if (position == DeckPosition.MIDDLE) {
-                    // Middle figures in the deck have blank axes.
-                    val sharedAxesTheme = when {
-                        shareX && shareY -> axisBlankX + axisBlankY + axisLineBlankX + axisLineBlankY
-                        shareX -> axisBlankX + axisLineBlankX
-                        shareY -> axisBlankY + axisLineBlankY
-                        else -> emptyMap()
-                    }
-
-                    DECK_OVERLAY_THEME_BASE + sharedAxesTheme
-                } else {
-                    // The last figure (topmost layer) has blank axes, except the axis line, which is shown if shared and ontop=True.
-                    val sharedAxesTheme = when {
-                        shareX && shareY -> axisBlankX + axisBlankY
-                        shareX -> axisBlankX
-                        shareY -> axisBlankY
-                        else -> emptyMap()
-                    }
-                    val axisLineX = if (shareX && !ontopX) axisLineBlankX else emptyMap()
-                    val axisLineY = if (shareY && !ontopY) axisLineBlankY else emptyMap()
-
-                    DECK_OVERLAY_THEME_BASE + sharedAxesTheme + axisLineX + axisLineY
-                }
-            }
-
-            @Suppress("UNCHECKED_CAST")
-            val existingTheme = (spec[THEME] as? Map<String, Any>) ?: emptyMap()
-            return spec + (THEME to overlayTheme + existingTheme)
-        }
-    }
-
     enum class GuidesSharingMode(val id: String) {
         AUTO(Option.SubPlots.Guides.AUTO),
         COLLECT(Option.SubPlots.Guides.COLLECT),
@@ -402,22 +287,6 @@ class CompositeFigureConfig constructor(
                     Option.SubPlots.Guides.COLLECT -> COLLECT
                     Option.SubPlots.Guides.KEEP -> KEEP
                     else -> throw IllegalArgumentException("'guides'='$option'. Use: 'auto', 'collect', or 'keep'.")
-                }
-            }
-        }
-    }
-
-    private enum class DeckPosition() {
-        FIRST,
-        MIDDLE,
-        LAST;  // topmost layer in the deck, drawn last
-
-        companion object {
-            fun ofIndex(index: Int, maxIndex: Int): DeckPosition {
-                return when (index) {
-                    0 -> FIRST
-                    maxIndex -> LAST
-                    else -> MIDDLE
                 }
             }
         }
