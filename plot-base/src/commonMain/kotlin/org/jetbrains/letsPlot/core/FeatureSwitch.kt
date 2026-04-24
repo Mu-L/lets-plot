@@ -19,6 +19,8 @@ object FeatureSwitch {
 
     const val PLOT_VIEW_TOOLBOX_HTML = false
 
+    // When 'debug drawing' is enabled, you need to exclude visual tests from the build:
+    // ./gradlew build -x test -x macosArm64Test
     const val PLOT_DEBUG_DRAWING = false
     const val LEGEND_DEBUG_DRAWING = false
 }

@@ -43,8 +43,9 @@ open class GGDeck {
     private fun deckOfTwo(): MutableMap<String, Any> {
         val data = randomData(50)
 
+//        'theme': {'axis_line_x': {'color': 'transparent'}},
         val lineSpecRaw = """
-            {   
+            {
                'mapping': {'x': 'x', 'y': 'y1'},
                'guides': {'y': {'title': 'Line (left)'}},
                'kind': 'plot',
